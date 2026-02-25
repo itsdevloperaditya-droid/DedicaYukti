@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>DedicaYukti - Online Learning</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Hamburger Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">DedicaYukti</a>
+            
+            <!-- Hamburger Menu Button (Mobile) -->
+            <div class="hamburger" id="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <!-- Navigation Links -->
+            <div class="nav-links-wrapper" id="nav-links-wrapper">
+                <div id="auth-controls" class="nav-links auth-section">
+                    <!-- Auth buttons will be injected here via script.js -->
+                </div>
+                
+                <div class="nav-links main-nav">
+                    <a href="#" onclick="showSection('home')">Home</a>
+                    <a href="#" onclick="showSection('batches')">Your Batches</a>
+                    <a href="#" onclick="showSection('profile')">Profile</a>
+                    <a href="#" onclick="showSection('contact')">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <div class="auth-box">
+                <div class="auth-tabs">
+                    <button id="tab-login" class="tab-btn active">Login</button>
+                    <button id="tab-signup" class="tab-btn">Sign Up</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <h2>Login</h2>
+                    <div class="input-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="login-email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="login-password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="auth-submit">Login</button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form hidden">
+                    <h2>Sign Up</h2>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="signup-name" placeholder="Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="signup-email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="signup-password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="auth-submit">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <header class="hero" id="hero-section">
+        <div class="hero-content">
+            <h1>Welcome to DedicaYukti</h1>
+            <p>DedicaYukti is an online learning platform for Class 9th to 12th Science and competitive exams like JEE, BPSC, CBSE, and BCECE</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home-section" class="content-section">
+            <h2 class="section-title">Available Courses</h2>
+            <div id="course-container" class="course-grid">
+                <div class="loader">Loading courses...</div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile-section" class="content-section hidden">
+            <h2 class="section-title">Your Profile</h2>
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-photo-container">
+                        <img id="profile-img" src="https://via.placeholder.com/150" alt="Profile Photo">
+                        <div class="photo-overlay" onclick="document.getElementById('photo-upload').click()">
+                            <span>Change Photo</span>
+                        </div>
+                        <input type="file" id="photo-upload" hidden accept="image/*">
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="display-name">User Name</h3>
+                        <p id="display-email">user@example.com</p>
+                        <button class="edit-btn" onclick="toggleProfileEdit()">Edit Profile</button>
+                    </div>
+                </div>
+                <div id="profile-edit-form" class="hidden">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <div class="input-group">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="edit-name" placeholder="Enter your name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Profile Photo URL (optional)</label>
+                        <div class="input-group">
+                            <i class="fas fa-image input-icon"></i>
+                            <input type="text" id="edit-photo-url" placeholder="Paste image URL or use upload above">
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Your Batches Section -->
+        <section id="batches-section" class="content-section hidden">
+            <h2 class="section-title">Your Batches</h2>
+            <div id="batches-container" class="course-grid">
+                <div class="loader">Loading your batches...</div>
+            </div>
+        </section>
+
+        <!-- Contact Us Section -->
+        <section id="contact-section" class="content-section hidden">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-card">
+                <form id="contact-form" class="modern-form">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="contact-name" placeholder="Full Name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="contact-email" placeholder="Your Email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-heading input-icon"></i>
+                            <input type="text" id="contact-subject" placeholder="Subject" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-message input-icon" style="align-self: flex-start; margin-top: 15px;"></i>
+                            <textarea id="contact-message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="contact-submit">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ADMIN SECTION -->
+        <section id="admin-section" class="content-section hidden">
+            <div class="admin-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 class="section-title" style="margin:0;">Admin Dashboard</h2>
+                <button onclick="adminLogout()" class="logout-btn">Logout</button>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:30px;">
+                <div class="stat-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center;">
+                    <h3 id="stat-total-courses">0</h3>
+                    <p style="color:#666;">Total Courses</p>
+                </div>
+                <div class="stat-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center;">
+                    <h3 id="stat-total-users">0</h3>
+                    <p style="color:#666;">Total Students</p>
+                </div>
+                <div class="stat-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center;">
+                    <h3 id="stat-total-revenue">₹0</h3>
+                    <p style="color:#666;">Estimated Revenue</p>
+                </div>
+            </div>
+            
+            <div class="admin-grid" style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+                <!-- Add New Course -->
+                <div class="admin-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                    <h3>➕ Add New Course</h3>
+                    <form id="add-course-form" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                        <input type="text" id="new-course-title" placeholder="Course Title" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                        <textarea id="new-course-desc" placeholder="Description" required style="padding:10px; border:1px solid #ddd; border-radius:5px;" rows="3"></textarea>
+                        <input type="text" id="new-course-cat" placeholder="Category (e.g. Science)" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                        <input type="number" id="new-course-price" placeholder="Original Price (₹)" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                        <input type="number" id="new-course-discount" placeholder="Discounted Price (₹) - Optional" style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                        <button type="submit" class="auth-submit" style="margin-top:10px;">Create Course</button>
+                    </form>
+                </div>
+
+                <!-- Manage Existing Courses -->
+                <div class="admin-card full-width" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                    <h3>🛠 Manage Courses</h3>
+                    <div id="admin-course-list" style="margin-top:15px; max-height:500px; overflow-y:auto;">Loading courses...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeAdminLogin()" class="close">&times;</span>
+            <h2>Admin Access</h2>
+            <form id="admin-login-form">
+                <input type="text" id="admin-user" placeholder="Username" required style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:5px;">
+                <input type="password" id="admin-pass" placeholder="Password" required style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:5px;">
+                <button type="submit" class="auth-submit" style="width:100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Info Modal (New) -->
+    <div id="edit-info-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span onclick="document.getElementById('edit-info-modal').style.display='none'" class="close">&times;</span>
+            <h2>Edit Basic Info</h2>
+            <form id="edit-info-form" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                <input type="hidden" id="edit-info-id">
+                <input type="text" id="edit-info-title" placeholder="Course Title" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                <textarea id="edit-info-desc" placeholder="Description" required style="padding:10px; border:1px solid #ddd; border-radius:5px;" rows="3"></textarea>
+                <input type="text" id="edit-info-cat" placeholder="Category" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                <input type="number" id="edit-info-price" placeholder="Original Price (₹)" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                <input type="number" id="edit-info-discount" placeholder="Discounted Price (₹) - Optional" style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                <button type="submit" class="auth-submit">Update Info</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Content Modal -->
+    <div id="edit-content-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span onclick="document.getElementById('edit-content-modal').style.display='none'" class="close">&times;</span>
+            <h2 id="edit-course-title">Edit Content</h2>
+            <input type="hidden" id="edit-course-id">
+            
+            <div class="edit-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:20px;">
+                <div>
+                    <h3>🎥 Video Links</h3>
+                    <p style="font-size:0.8rem; color:#666; margin-bottom:5px;">Paste one link per line</p>
+                    <textarea id="edit-video-links" rows="10" placeholder="https://youtube.com/..." style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;"></textarea>
+                </div>
+                <div>
+                    <h3>📄 PDF Links</h3>
+                    <p style="font-size:0.8rem; color:#666; margin-bottom:5px;">Paste one link per line</p>
+                    <textarea id="edit-pdf-links" rows="10" placeholder="https://drive.google.com/..." style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;"></textarea>
+                </div>
+            </div>
+            <button onclick="saveCourseContent()" class="auth-submit" style="margin-top: 20px; width:100%;">Save Changes</button>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: #aaa; font-size: 0.8rem; margin-top:50px; border-top:1px solid #eee;">
+        &copy; 2026 DedicaYukti. All rights reserved. 
+        <br><br>
+        <a href="#" onclick="openAdminLogin()" style="color: #ccc; text-decoration: none; font-size:0.7rem;">Admin Login</a>
+    </footer>
+
+    <!-- Floating Dark/Light Mode Toggle Button -->
+    <div class="floating-btn-container">
+        <button id="floating-theme-toggle" class="floating-theme-toggle">
+            <span class="floating-theme-icon">🌙</span>
+            <span class="floating-theme-text">Dark</span>
+        </button>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Mobile Menu Script (Inline for faster loading) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger-menu');
+            const navWrapper = document.getElementById('nav-links-wrapper');
+            
+            if (hamburger && navWrapper) {
+                hamburger.addEventListener('click', function() {
+                    navWrapper.classList.toggle('active');
+                    
+                    // Change icon based on menu state
+                    const icon = this.querySelector('i');
+                    if (navWrapper.classList.contains('active')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+                
+                // Close menu when clicking on a link (mobile)
+                const navLinks = document.querySelectorAll('.main-nav a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        if (window.innerWidth <= 768) {
+                            navWrapper.classList.remove('active');
+                            const icon = hamburger.querySelector('i');
+                            icon.classList.remove('fa-times');
+                            icon.classList.add('fa-bars');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
