@@ -1,10 +1,5 @@
-// API_URL ko dynamic karo taaki mobile aur PC dono pe chale
-<<<<<<< HEAD
 // Production API URL for Render
 const API_URL = 'https://dedicayukti.onrender.com/api';
-=======
-const API_URL = 'https://https://dedicayukti.onrender.com/api';
->>>>>>> d42bb0be03b4e02d00821d86cb709c4c0ce52808
 const RAZORPAY_KEY_ID = 'rzp_live_SJWx8xpXBRPVsI';
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;

@@ -3,36 +3,33 @@ const mongoose = require('mongoose');
 const MONGO_URI = process.env.MONGO_URI;
 const DB_NAME = 'dedicayukti';
 
-// Mock DB structure taaki functions crash na ho
-const mockCollection = {
-  find: () => ({ toArray: async () => [] }),
-  findOne: async () => null,
-  updateOne: async () => ({ modifiedCount: 1 }),
-  insertOne: async () => ({ insertedId: 'mock_id' }),
-  deleteOne: async () => ({ deletedCount: 1 }),
-  countDocuments: async () => 0,
-  insertMany: async () => ({ insertedCount: 0 })
-};
-
-const mockDb = {
-  collection: () => mockCollection
-};
-
+/**
+ * Strict Database Connection for Production.
+ * No more Mock Mode - we need a real database now.
+ */
 async function connectToDatabase() {
-  // Agar MONGO_URI missing hai ya localhost hai Render par, toh skip karein
   if (!MONGO_URI || (MONGO_URI.includes('localhost') && process.env.RENDER)) {
-    console.log('⚠️  DATABASE WARNING: Running in MOCK MODE (No real database connected)');
-    return mockDb;
+    console.error('--------------------------------------------------');
+    console.error('❌ CRITICAL ERROR: Real MONGO_URI is missing!');
+    console.error('Render cannot use localhost. You MUST add MongoDB Atlas URI.');
+    console.error('--------------------------------------------------');
+    // We stop the process so you know it's not connected
+    process.exit(1);
   }
 
   try {
-    await mongoose.connect(MONGO_URI, { dbName: DB_NAME });
+    await mongoose.connect(MONGO_URI, { 
+        dbName: DB_NAME,
+        serverSelectionTimeoutMS: 5000 // Stop waiting after 5 seconds
+    });
     console.log('✅ Successfully connected to MongoDB Atlas 🚀');
     return mongoose.connection.db;
   } catch (error) {
-    console.error('❌ MONGODB CONNECTION FAILED:', error.message);
-    console.log('⚠️  Falling back to MOCK MODE to keep server running.');
-    return mockDb;
+    console.error('--------------------------------------------------');
+    console.error('❌ DATABASE CONNECTION FAILED:', error.message);
+    console.error('Check your IP Whitelist on MongoDB Atlas.');
+    console.error('--------------------------------------------------');
+    process.exit(1);
   }
 }
 
@@ -40,7 +37,7 @@ function getDb() {
   if (mongoose.connection && mongoose.connection.readyState === 1) {
     return mongoose.connection.db;
   }
-  return mockDb;
+  throw new Error('Database not connected. Process should have exited.');
 }
 
 module.exports = { connectToDatabase, getDb };
