@@ -10,17 +10,26 @@ const KEY_SECRET = '8adDCFDUaunXmRPthppvQtEh';
 /**
  * Creates a Razorpay order for a given course using raw Node.js https module.
  */
-async function createRazorpayOrder(courseId) {
+async function createRazorpayOrder(courseId, couponCode = null) {
   const db = getDb();
   const course = await db.collection('courses').findOne({ _id: new ObjectId(courseId) });
 
   // Use discounted price if it exists and is valid, otherwise use regular price
-  const finalPrice = (course.discountedPrice && Number(course.discountedPrice) < Number(course.price)) 
-                     ? course.discountedPrice 
-                     : course.price;
+  let finalPrice = (course.discountedPrice && Number(course.discountedPrice) < Number(course.price)) 
+                     ? Number(course.discountedPrice) 
+                     : Number(course.price);
+
+  // Apply Coupon if provided
+  if (couponCode) {
+    const coupon = await db.collection('coupons').findOne({ code: couponCode.toUpperCase() });
+    if (coupon) {
+      const discountAmount = (finalPrice * Number(coupon.discountPercentage)) / 100;
+      finalPrice = finalPrice - discountAmount;
+    }
+  }
 
   // Convert price to paise (e.g. 500 Rupees = 50000 Paise)
-  const amount = Number(finalPrice) * 100; 
+  const amount = Math.round(finalPrice * 100); 
   const currency = 'INR';
 
   const payload = JSON.stringify({

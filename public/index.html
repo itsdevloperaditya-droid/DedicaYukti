@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>DedicaYukti - Online Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <!-- Font Awesome for Hamburger Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,15 +23,20 @@
             
             <!-- Navigation Links -->
             <div class="nav-links-wrapper" id="nav-links-wrapper">
-                <div id="auth-controls" class="nav-links auth-section">
-                    <!-- Auth buttons will be injected here via script.js -->
+                <div class="nav-right-actions">
+                    <button id="theme-toggle" class="theme-nav-btn">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <div id="auth-controls" class="nav-links auth-section">
+                        <!-- Auth buttons will be injected here via script.js -->
+                    </div>
                 </div>
                 
                 <div class="nav-links main-nav">
                     <a href="#" onclick="showSection('home')">Home</a>
                     <a href="#" onclick="showSection('batches')">Your Batches</a>
                     <a href="#" onclick="showSection('profile')">Profile</a>
-                    <a href="#" onclick="showSection('contact')">Contact Us</a>
+                    <a href="#" onclick="showSection('more')">Contact Us</a>
                 </div>
             </div>
         </div>
@@ -86,6 +94,11 @@
         </div>
     </header>
 
+    <div class="modern-divider-container">
+        <div class="modern-divider-line"></div>
+        <div class="modern-divider-dot"></div>
+    </div>
+
     <main class="container">
         <!-- Home Section -->
         <section id="home-section" class="content-section">
@@ -98,80 +111,127 @@
         <!-- Profile Section -->
         <section id="profile-section" class="content-section hidden">
             <h2 class="section-title">Your Profile</h2>
-            <div class="profile-card">
-                <div class="profile-header">
-                    <div class="profile-photo-container">
-                        <img id="profile-img" src="https://via.placeholder.com/150" alt="Profile Photo">
-                        <div class="photo-overlay" onclick="document.getElementById('photo-upload').click()">
-                            <span>Change Photo</span>
+            <div class="profile-container-modern">
+                <div class="profile-card-modern">
+                    <div class="profile-banner"></div>
+                    <div class="profile-content-modern">
+                        <div class="profile-photo-wrapper">
+                            <div class="profile-photo-main" onclick="document.getElementById('photo-upload').click()">
+                                <img id="profile-img" src="https://ui-avatars.com/api/?name=Guest&background=random&size=150" alt="Profile Photo">
+                                <div class="photo-edit-overlay">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                            </div>
+                            <input type="file" id="photo-upload" hidden accept="image/*">
                         </div>
-                        <input type="file" id="photo-upload" hidden accept="image/*">
-                    </div>
-                    <div class="profile-info">
-                        <h3 id="display-name">User Name</h3>
-                        <p id="display-email">user@example.com</p>
-                        <button class="edit-btn" onclick="toggleProfileEdit()">Edit Profile</button>
-                    </div>
-                </div>
-                <div id="profile-edit-form" class="hidden">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <div class="input-group">
-                            <i class="fas fa-user input-icon"></i>
-                            <input type="text" id="edit-name" placeholder="Enter your name">
+                        
+                        <div class="profile-info-modern">
+                            <h3 id="display-name">User Name</h3>
+                            <p id="display-email">user@example.com</p>
+                            <div class="profile-badges">
+                                <span class="badge student"><i class="fas fa-user-graduate"></i> Student</span>
+                                <span class="badge verified"><i class="fas fa-check-circle"></i> Verified</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-actions-modern">
+                            <button class="modern-edit-btn" onclick="toggleProfileEdit()">
+                                <i class="fas fa-user-edit"></i> Edit Profile
+                            </button>
+                            <button class="modern-edit-btn logout-profile-btn" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+
+                        <div class="profile-danger-zone">
+                            <button class="delete-account-btn" onclick="openDeleteModal()">
+                                <i class="fas fa-trash-alt"></i> Delete Account Permanentely
+                            </button>
+                            <p class="danger-hint">Once you delete your account, there is no going back. Please be certain.</p>
+                        </div>
+
+                        <div id="profile-edit-form" class="profile-form-modern hidden">
+                            <div class="form-group-modern">
+                                <label>Full Name</label>
+                                <div class="input-wrapper-modern">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" id="edit-name" placeholder="Enter your full name">
+                                </div>
+                            </div>
+                            <button class="modern-save-btn" onclick="saveProfile(event)">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Profile Photo URL (optional)</label>
-                        <div class="input-group">
-                            <i class="fas fa-image input-icon"></i>
-                            <input type="text" id="edit-photo-url" placeholder="Paste image URL or use upload above">
-                        </div>
-                    </div>
-                    <button class="save-btn" onclick="saveProfile()">Save Changes</button>
                 </div>
             </div>
         </section>
 
         <!-- Your Batches Section -->
         <section id="batches-section" class="content-section hidden">
-            <h2 class="section-title">Your Batches</h2>
             <div id="batches-container" class="course-grid">
                 <div class="loader">Loading your batches...</div>
             </div>
         </section>
 
-        <!-- Contact Us Section -->
-        <section id="contact-section" class="content-section hidden">
-            <h2 class="section-title">Contact Us</h2>
-            <div class="contact-card">
-                <form id="contact-form" class="modern-form">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <i class="fas fa-user input-icon"></i>
-                            <input type="text" id="contact-name" placeholder="Full Name" required>
-                        </div>
+        <!-- More Section -->
+        <section id="more-section" class="content-section hidden">
+            <h2 class="section-title">More</h2>
+            
+            <!-- More Main Menu List -->
+            <div id="more-menu-list" class="more-menu-container">
+                <button class="more-menu-item" onclick="showMoreSubSection('contact-us')">
+                    <div class="menu-item-left">
+                        <div class="menu-icon-box blue"><i class="fas fa-envelope"></i></div>
+                        <span>Contact Us</span>
                     </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <i class="fas fa-envelope input-icon"></i>
-                            <input type="email" id="contact-email" placeholder="Your Email" required>
-                        </div>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Future menu items will go here -->
+                <button class="more-menu-item disabled">
+                    <div class="menu-item-left">
+                        <div class="menu-icon-box purple"><i class="fas fa-info-circle"></i></div>
+                        <span>About DedicaYukti</span>
                     </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <i class="fas fa-heading input-icon"></i>
-                            <input type="text" id="contact-subject" placeholder="Subject" required>
+                    <span class="coming-soon">Coming Soon</span>
+                </button>
+            </div>
+
+            <!-- Sub-Section: Contact Us -->
+            <div id="sub-contact-us" class="more-sub-content hidden">
+                <button class="back-link-btn" onclick="showMoreSubSection('main')"><i class="fas fa-arrow-left"></i> Back to Menu</button>
+                <div class="more-card">
+                    <h3>Contact Us</h3>
+                    <p>Have questions? Reach out to our support team.</p>
+                    <form id="contact-form" class="modern-form">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" id="contact-name" placeholder="Full Name" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <i class="fas fa-message input-icon" style="align-self: flex-start; margin-top: 15px;"></i>
-                            <textarea id="contact-message" placeholder="Your Message" rows="5" required></textarea>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fas fa-envelope input-icon"></i>
+                                <input type="email" id="contact-email" placeholder="Your Email" required>
+                            </div>
                         </div>
-                    </div>
-                    <button type="submit" class="contact-submit">Send Message</button>
-                </form>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fas fa-heading input-icon"></i>
+                                <input type="text" id="contact-subject" placeholder="Subject" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fas fa-message input-icon" style="align-self: flex-start; margin-top: 15px;"></i>
+                                <textarea id="contact-message" placeholder="Your Message" rows="5" required></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="contact-submit">Send Message</button>
+                    </form>
+                </div>
             </div>
         </section>
 
@@ -188,34 +248,56 @@
                     <h3 id="stat-total-courses">0</h3>
                     <p style="color:#666;">Total Courses</p>
                 </div>
-                <div class="stat-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center;">
+                <div class="stat-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center; cursor:pointer;" onclick="switchAdminTab('users')">
                     <h3 id="stat-total-users">0</h3>
-                    <p style="color:#666;">Total Students</p>
+                    <p style="color:#666;">Total Students (View All)</p>
                 </div>
                 <div class="stat-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center;">
                     <h3 id="stat-total-revenue">₹0</h3>
                     <p style="color:#666;">Estimated Revenue</p>
                 </div>
             </div>
-            
-            <div class="admin-grid" style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
-                <!-- Add New Course -->
-                <div class="admin-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-                    <h3>➕ Add New Course</h3>
-                    <form id="add-course-form" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-                        <input type="text" id="new-course-title" placeholder="Course Title" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
-                        <textarea id="new-course-desc" placeholder="Description" required style="padding:10px; border:1px solid #ddd; border-radius:5px;" rows="3"></textarea>
-                        <input type="text" id="new-course-cat" placeholder="Category (e.g. Science)" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
-                        <input type="number" id="new-course-price" placeholder="Original Price (₹)" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
-                        <input type="number" id="new-course-discount" placeholder="Discounted Price (₹) - Optional" style="padding:10px; border:1px solid #ddd; border-radius:5px;">
-                        <button type="submit" class="auth-submit" style="margin-top:10px;">Create Course</button>
-                    </form>
-                </div>
 
-                <!-- Manage Existing Courses -->
-                <div class="admin-card full-width" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-                    <h3>🛠 Manage Courses</h3>
-                    <div id="admin-course-list" style="margin-top:15px; max-height:500px; overflow-y:auto;">Loading courses...</div>
+            <!-- Admin Section Tabs -->
+            <div class="admin-tab-nav" style="display:flex; gap:15px; margin-bottom:25px; border-bottom:1px solid #334155; padding-bottom:10px;">
+                <button class="admin-nav-btn active" onclick="switchAdminDashboardTab('courses')">📚 Manage Courses</button>
+                <button class="admin-nav-btn" onclick="switchAdminDashboardTab('users')">👥 Registered Students</button>
+            </div>
+            
+            <div id="admin-courses-tab" class="admin-dashboard-panel">
+                <div class="admin-grid" style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+                    <!-- Add New Course -->
+                    <div class="admin-card" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                        <h3>➕ Add New Course</h3>
+                        <form id="add-course-form" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                            <input type="text" id="new-course-title" placeholder="Course Title" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                            <textarea id="new-course-desc" placeholder="Description" required style="padding:10px; border:1px solid #ddd; border-radius:5px;" rows="3"></textarea>
+                            <input type="text" id="new-course-cat" placeholder="Category (e.g. Science)" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                            <input type="number" id="new-course-price" placeholder="Original Price (₹)" required style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                            <input type="number" id="new-course-discount" placeholder="Discounted Price (₹) - Optional" style="padding:10px; border:1px solid #ddd; border-radius:5px;">
+                            <button type="submit" class="auth-submit" style="margin-top:10px;">Create Course</button>
+                        </form>
+                    </div>
+
+                    <!-- Manage Existing Courses -->
+                    <div class="admin-card full-width" style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                        <h3>🛠 Manage Courses</h3>
+                        <div id="admin-course-list" style="margin-top:15px; max-height:500px; overflow-y:auto;">Loading courses...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Registered Users Tab -->
+            <div id="admin-users-tab" class="admin-dashboard-panel" style="display:none;">
+                <div class="admin-card" style="background:white; padding:25px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3>👥 Registered Students List</h3>
+                        <button onclick="loadAllRegisteredUsers()" class="auth-btn" style="padding:8px 20px; font-size:0.8rem;"><i class="fas fa-sync"></i> Refresh List</button>
+                    </div>
+                    <div id="all-users-list" class="admin-user-table-container">
+                        <!-- User list injected here -->
+                        <div class="loader">Loading users...</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -251,26 +333,183 @@
         </div>
     </div>
 
-    <!-- Edit Content Modal -->
+    <!-- Full Course Manager Modal (Unified) -->
     <div id="edit-content-modal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <span onclick="document.getElementById('edit-content-modal').style.display='none'" class="close">&times;</span>
-            <h2 id="edit-course-title">Edit Content</h2>
-            <input type="hidden" id="edit-course-id">
-            
-            <div class="edit-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:20px;">
+        <div class="modal-content manager-modal-content">
+            <div class="manager-header">
                 <div>
-                    <h3>🎥 Video Links</h3>
-                    <p style="font-size:0.8rem; color:#666; margin-bottom:5px;">Paste one link per line</p>
-                    <textarea id="edit-video-links" rows="10" placeholder="https://youtube.com/..." style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;"></textarea>
+                    <h2 id="edit-course-title">Manage Course</h2>
+                    <p class="manager-subtitle">Course ID: <span id="display-course-id">...</span></p>
                 </div>
-                <div>
-                    <h3>📄 PDF Links</h3>
-                    <p style="font-size:0.8rem; color:#666; margin-bottom:5px;">Paste one link per line</p>
-                    <textarea id="edit-pdf-links" rows="10" placeholder="https://drive.google.com/..." style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;"></textarea>
+                <button onclick="document.getElementById('edit-content-modal').style.display='none'" class="manager-close-btn">&times;</button>
+            </div>
+            
+            <div class="manager-tabs">
+                <button class="manager-tab-btn active" onclick="switchManagerTab('info')"><i class="fas fa-info-circle"></i> Basic Info</button>
+                <button class="manager-tab-btn" onclick="switchManagerTab('faculty')"><i class="fas fa-chalkboard-teacher"></i> Faculty & Features</button>
+                <button class="manager-tab-btn" onclick="switchManagerTab('coupons')"><i class="fas fa-ticket-alt"></i> Coupons</button>
+                <button class="manager-tab-btn" onclick="switchManagerTab('content')"><i class="fas fa-layer-group"></i> Content (V/N/T)</button>
+                <button class="manager-tab-btn" onclick="switchManagerTab('stats')"><i class="fas fa-chart-line"></i> Analytics & Users</button>
+            </div>
+
+            <div id="manager-tab-body" class="manager-body">
+                <!-- 1. BASIC INFO TAB -->
+                <div id="manager-info-section" class="manager-panel active">
+                    <form id="unified-info-form" class="manager-form-grid">
+                        <input type="hidden" id="edit-course-id">
+                        <div class="form-group full-width">
+                            <label>Course Title</label>
+                            <input type="text" id="unified-title" required class="modern-input">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Course Description</label>
+                            <textarea id="unified-desc" rows="4" required class="modern-textarea"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input type="text" id="unified-cat" required class="modern-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Regular Price (₹)</label>
+                            <input type="number" id="unified-price" required class="modern-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Discounted Price (₹)</label>
+                            <input type="number" id="unified-discount" class="modern-input">
+                        </div>
+                        <div class="form-actions full-width">
+                            <button type="submit" class="auth-submit save-info-btn">Save Basic Info</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- NEW: COUPONS TAB -->
+                <div id="manager-coupons-section" class="manager-panel">
+                    <div class="manager-form-grid">
+                        <div class="form-group">
+                            <label>Coupon Code</label>
+                            <input type="text" id="new-coupon-code" class="modern-input" placeholder="e.g. WELCOME10">
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Percentage (%)</label>
+                            <input type="number" id="new-coupon-discount" class="modern-input" placeholder="e.g. 10">
+                        </div>
+                        <div class="form-actions full-width">
+                            <button type="button" onclick="createCoupon()" class="auth-submit" style="width: auto; padding: 12px 30px;">Generate Coupon</button>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin: 20px 0 10px;">Active Coupons</h4>
+                    <div id="admin-coupons-list" class="user-list-container">
+                        <!-- Coupons list here -->
+                    </div>
+                </div>
+
+                <!-- NEW: FACULTY & FEATURES TAB -->
+                <div id="manager-faculty-section" class="manager-panel">
+                    <div class="manager-form-grid">
+                        <div class="form-group">
+                            <label>Faculty Name</label>
+                            <input type="text" id="edit-faculty-name" class="modern-input" placeholder="e.g. Dr. Aditya">
+                        </div>
+                        <div class="form-group">
+                            <label>Faculty Photo</label>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <img id="edit-faculty-preview" src="https://via.placeholder.com/60" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+                                <input type="file" id="edit-faculty-photo" class="modern-input" accept="image/*" style="padding: 8px;">
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Faculty Bio</label>
+                            <textarea id="edit-faculty-bio" class="modern-textarea" rows="3" placeholder="Short bio about the instructor..."></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Key Features (One per line)</label>
+                            <textarea id="edit-course-features" class="modern-textarea" rows="5" placeholder="• 24/7 Support&#10;• Live Classes&#10;• PDF Notes"></textarea>
+                        </div>
+                        <div class="form-actions full-width">
+                            <button onclick="saveFacultyFeatures(event)" class="auth-submit save-info-btn">Save Faculty & Features</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. CONTENT TAB (Dynamic Chapters) -->
+                <div id="manager-content-section" class="manager-panel">
+                    <div class="content-sub-nav">
+                        <button class="admin-tab-btn active" onclick="switchAdminSubject('physics')">Physics</button>
+                        <button class="admin-tab-btn" onclick="switchAdminSubject('chemistry')">Chemistry</button>
+                        <button class="admin-tab-btn" onclick="switchAdminSubject('maths')">Maths</button>
+                        <button class="admin-tab-btn" onclick="switchAdminTab('tests')">Manage Tests</button>
+                    </div>
+
+                    <!-- Chapter Manager Area -->
+                    <div id="chapter-manager-area">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 id="current-admin-subject-label" style="margin:0;">Physics Chapters</h3>
+                            <button onclick="addNewChapter()" class="auth-btn" style="background: var(--success); color: white; border: none; padding: 8px 20px;">+ Add Chapter</button>
+                        </div>
+                        
+                        <div id="chapters-list" style="display: flex; flex-direction: column; gap: 15px;">
+                            <!-- Chapters will be injected here -->
+                            <p style="color: #666; font-style: italic;">Select a subject to manage chapters...</p>
+                        </div>
+                    </div>
+
+                    <!-- Global Tests Manager (Separate from chapters) -->
+                    <div id="admin-tests-section" class="admin-panel" style="display: none; margin-top: 20px;">
+                        <div class="content-grid-4">
+                            <div class="form-group"><label>Physics Tests</label><textarea id="edit-physics-tests" rows="8" class="modern-textarea"></textarea></div>
+                            <div class="form-group"><label>Chemistry Tests</label><textarea id="edit-chemistry-tests" rows="8" class="modern-textarea"></textarea></div>
+                            <div class="form-group"><label>Maths Tests</label><textarea id="edit-maths-tests" rows="8" class="modern-textarea"></textarea></div>
+                            <div class="form-group"><label>Practice Tests</label><textarea id="edit-practice-tests" rows="8" class="modern-textarea"></textarea></div>
+                        </div>
+                    </div>
+
+                    <button onclick="saveCourseContent(event)" class="auth-submit full-save-btn" style="margin-top: 30px;">💾 Save All Changes (Chapters & Tests)</button>
+                </div>
+
+                <!-- Chapter Content Edit Modal (Inner Modal) -->
+                <div id="chapter-content-modal" class="modal" style="z-index: 1100;">
+                    <div class="modal-content" style="max-width: 700px; border-radius: 20px;">
+                        <span onclick="closeChapterModal()" class="close">&times;</span>
+                        <h3 id="modal-chapter-title">Edit Chapter Content</h3>
+                        <div style="margin-top: 20px;">
+                            <div class="form-group">
+                                <label>Chapter Name</label>
+                                <input type="text" id="modal-chapter-name" class="modern-input" placeholder="e.g. Kinematics">
+                            </div>
+                            <div class="form-group">
+                                <label>Videos (One link per line)</label>
+                                <textarea id="modal-chapter-videos" rows="6" class="modern-textarea" placeholder="YouTube links..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Notes (One link per line)</label>
+                                <textarea id="modal-chapter-notes" rows="6" class="modern-textarea" placeholder="PDF links..."></textarea>
+                            </div>
+                            <button onclick="applyChapterChanges()" class="auth-submit" style="width: 100%; margin-top: 15px;">Update Chapter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. STATS & ANALYTICS TAB -->
+                <div id="manager-stats-section" class="manager-panel">
+                    <div class="stats-overview-grid">
+                        <div class="manager-stat-box blue">
+                            <h4>Total Enrolled Students</h4>
+                            <h2 id="course-total-students">0</h2>
+                        </div>
+                        <div class="manager-stat-box green">
+                            <h4>Test Participation Rate</h4>
+                            <h2 id="course-test-rate">0%</h2>
+                        </div>
+                    </div>
+
+                    <h3 class="panel-subtitle">Detailed User Enrollment</h3>
+                    <div id="course-user-list" class="user-list-container">
+                        <p class="fetching-msg">Fetching user data...</p>
+                    </div>
                 </div>
             </div>
-            <button onclick="saveCourseContent()" class="auth-submit" style="margin-top: 20px; width:100%;">Save Changes</button>
         </div>
     </div>
 
@@ -280,14 +519,179 @@
         <a href="#" onclick="openAdminLogin()" style="color: #ccc; text-decoration: none; font-size:0.7rem;">Admin Login</a>
     </footer>
 
-    <!-- Floating Dark/Light Mode Toggle Button -->
-    <div class="floating-btn-container">
-        <button id="floating-theme-toggle" class="floating-theme-toggle">
-            <span class="floating-theme-icon">🌙</span>
-            <span class="floating-theme-text">Dark</span>
-        </button>
+    <!-- Full Screen Course Details Modal -->
+    <div id="course-details-modal" class="modal full-screen-modal">
+        <div class="details-modal-content">
+            <nav class="details-nav">
+                <button class="back-circle-btn" onclick="closeDetailsModal()"><i class="fas fa-arrow-left"></i></button>
+                <div class="details-logo">DedicaYukti</div>
+            </nav>
+
+            <div class="details-grid-container">
+                <!-- Left: Info & Content -->
+                <div class="details-left">
+                    <div class="details-header">
+                        <span id="details-category" class="course-category">Category</span>
+                        <h1 id="details-title">Course Title</h1>
+                        <p id="details-description">Full course description goes here...</p>
+                    </div>
+
+                    <div class="details-section">
+                        <h3 class="section-title-small"><i class="fas fa-star"></i> Key Features</h3>
+                        <ul id="details-features-list" class="features-list">
+                            <!-- Features injected here -->
+                        </ul>
+                    </div>
+
+                    <div class="details-section">
+                        <h3 class="section-title-small"><i class="fas fa-chalkboard-teacher"></i> Expert Faculty</h3>
+                        <div class="faculty-card">
+                            <img id="details-faculty-img" src="https://via.placeholder.com/80" alt="Faculty">
+                            <div class="faculty-info">
+                                <h4 id="details-faculty-name">Dr. Aditya</h4>
+                                <p id="details-faculty-bio">Subject Matter Expert with 10+ years experience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Pricing & Enrollment (Sticky on Desktop) -->
+                <div class="details-right">
+                    <div class="enrollment-card">
+                        <div class="card-price-display">
+                            <div class="price-row">
+                                <span class="price-label">Batch Price</span>
+                                <div class="price-value-group">
+                                    <span id="details-original-price" class="old-price">₹4999</span>
+                                    <span id="details-current-price" class="new-price">₹1999</span>
+                                </div>
+                            </div>
+                            <div id="details-discount-tag" class="discount-pill">60% OFF</div>
+                        </div>
+
+                        <!-- Coupon Section -->
+                        <div class="coupon-apply-container">
+                            <div class="coupon-input-wrapper">
+                                <input type="text" id="coupon-input" placeholder="Enter Coupon Code" class="coupon-input">
+                                <button onclick="applyCoupon()" id="apply-coupon-btn" class="apply-btn">Apply</button>
+                            </div>
+                            <div id="coupon-message" class="coupon-msg"></div>
+                        </div>
+                        
+                        <div class="guarantee-list">
+                            <div class="guarantee-item"><i class="fas fa-check-circle"></i> Full Syllabus Coverage</div>
+                            <div class="guarantee-item"><i class="fas fa-check-circle"></i> Doubt Clearing Sessions</div>
+                            <div class="guarantee-item"><i class="fas fa-check-circle"></i> Valid for 1 Year</div>
+                        </div>
+
+                        <div id="details-action-container">
+                            <!-- Button injected via script: Enroll Now or View Dashboard -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <!-- Bottom Navigation Glass Background -->
+    <div class="bottom-bar-blur"></div>
+
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active" onclick="showSection('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="bottom-nav-item" onclick="showSection('batches')">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Batches</span>
+        </a>
+        <a href="#" class="bottom-nav-item" onclick="showSection('profile')">
+            <i class="fas fa-user-circle"></i>
+            <span>Profile</span>
+        </a>
+        <a href="#" class="bottom-nav-item" onclick="showSection('more')">
+            <i class="fas fa-bars"></i>
+            <span>More</span>
+        </a>
+    </nav>
+
+    <!-- Admin: Student Details Modal -->
+    <div id="admin-user-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px; padding: 0; overflow: hidden; border-radius: 25px; display: flex; flex-direction: column; max-height: 85vh;">
+            <!-- Fixed Header -->
+            <div style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; color: white; text-align: center; position: relative; flex-shrink: 0;">
+                <span onclick="document.getElementById('admin-user-details-modal').style.display='none'" class="close" style="color: white; top: 10px; right: 15px; position: absolute; font-size: 2rem; cursor: pointer; line-height: 1;">&times;</span>
+                <img id="admin-view-user-img" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.3); object-fit: cover; margin-bottom: 10px;">
+                <h2 id="admin-view-user-name" style="margin: 0; font-size: 1.3rem;">User Name</h2>
+                <p id="admin-view-user-email" style="margin: 2px 0 0 0; opacity: 0.9; font-size: 0.85rem;">user@example.com</p>
+            </div>
+            
+            <!-- Scrollable Body -->
+            <div style="padding: 20px; background: var(--bg-secondary); overflow-y: auto; flex: 1;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-light);">
+                    <div>
+                        <small style="color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 700; font-size: 0.65rem;">Member Since</small>
+                        <strong id="admin-view-user-joined" style="font-size: 0.9rem;">Date</strong>
+                    </div>
+                    <div style="text-align: right;">
+                        <small style="color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 700; font-size: 0.65rem;">Total Purchases</small>
+                        <strong id="admin-view-user-count" style="font-size: 0.9rem; color: var(--accent);">0 Batches</strong>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 12px; font-size: 0.95rem;"><i class="fas fa-book-open"></i> Enrolled Batches</h4>
+                <div id="admin-view-user-batches" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Batches list -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div id="delete-account-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px; padding: 0; border-radius: 20px; overflow: hidden; border: 2px solid #ef4444; max-height: 90vh; display: flex; flex-direction: column;">
+            <div style="background: #ef4444; color: white; padding: 15px; text-align: center; flex-shrink: 0;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 5px;"></i>
+                <h3 style="margin: 0; font-size: 1.2rem;">Permanent Action!</h3>
+            </div>
+            <div style="padding: 20px; background: var(--bg-secondary); overflow-y: auto; flex: 1;">
+                <p style="color: var(--text-primary); font-weight: 700; margin-bottom: 10px; font-size: 0.9rem; line-height: 1.3;">
+                    Deleting your account will permanently remove:
+                </p>
+                <ul style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px; padding-left: 15px; line-height: 1.4;">
+                    <li>Your full profile details.</li>
+                    <li>Access to all purchased batches.</li>
+                    <li>All learning data & notes.</li>
+                </ul>
+                
+                <div class="form-group-modern" style="margin-bottom: 10px;">
+                    <label style="color: #ef4444; font-size: 0.8rem;">Verify Password</label>
+                    <div class="input-wrapper-modern" style="padding: 10px 15px;">
+                        <i class="fas fa-lock" style="font-size: 0.9rem;"></i>
+                        <input type="password" id="delete-pass-1" placeholder="Password" style="font-size: 0.9rem;">
+                    </div>
+                </div>
+
+                <div class="form-group-modern" style="margin-bottom: 15px;">
+                    <label style="color: #ef4444; font-size: 0.8rem;">Confirm Password</label>
+                    <div class="input-wrapper-modern" style="padding: 10px 15px;">
+                        <i class="fas fa-lock" style="font-size: 0.9rem;"></i>
+                        <input type="password" id="delete-pass-2" placeholder="Confirm Password" style="font-size: 0.9rem;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="closeDeleteModal()" class="modern-edit-btn" style="flex: 1; justify-content: center; padding: 10px; font-size: 0.9rem;">Cancel</button>
+                    <button onclick="processAccountDeletion()" class="modern-save-btn" style="flex: 1; background: #ef4444; margin-top: 0; justify-content: center; padding: 10px; font-size: 0.9rem;">
+                        Delete Forever
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="script.js"></script>
     

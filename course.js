@@ -23,7 +23,9 @@ async function createCourse(courseData) {
     price = 5,
     discountedPrice = null,
     videoLinks = [],
-    pdfLinks = []
+    pdfLinks = [],
+    faculty = { name: '', photo: '', bio: '' },
+    features = []
   } = courseData;
 
   const newCourse = {
@@ -34,6 +36,8 @@ async function createCourse(courseData) {
     discountedPrice: (discountedPrice !== undefined && discountedPrice !== null && discountedPrice !== '') ? Number(discountedPrice) : null,
     videoLinks,
     pdfLinks,
+    faculty,
+    features,
     createdAt: new Date()
   };
 

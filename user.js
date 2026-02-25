@@ -80,4 +80,19 @@ async function updateUserProfile(userId, profileData) {
   return result;
 }
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile };
+/**
+ * Permanently deletes a user account.
+ */
+async function deleteUser(userId, password) {
+  const { ObjectId } = require('mongodb');
+  const db = getDb();
+  
+  // Verify password first
+  const user = await db.collection('users').findOne({ _id: new ObjectId(userId), password });
+  if (!user) throw new Error('Incorrect password. Account deletion aborted.');
+
+  const result = await db.collection('users').deleteOne({ _id: new ObjectId(userId) });
+  return result;
+}
+
+module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, deleteUser };

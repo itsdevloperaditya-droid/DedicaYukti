@@ -4,7 +4,7 @@ const path = require('path');
 const { ObjectId } = require('mongodb');
 const { connectToDatabase, getDb } = require('./db');
 const { createCourse } = require('./course');
-const { registerUser, loginUser, getUserProfile, updateUserProfile } = require('./user');
+const { registerUser, loginUser, getUserProfile, updateUserProfile, deleteUser } = require('./user');
 const { createRazorpayOrder, verifyPayment } = require('./payment');
 const nodemailer = require('nodemailer');
 
@@ -17,7 +17,8 @@ const ADMIN_PASS = 'Power@9090';
 
 // Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Setup nodemailer
@@ -97,7 +98,8 @@ app.get('/api/course-details', async (req, res) => {
         if (userId && ObjectId.isValid(userId)) {
             const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
             if (user) {
-                if (user.email === 'its.devloper.aditya@gmail.com' || (user.purchasedCourses && user.purchasedCourses.some(id => id.toString() === courseId))) {
+                const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
+                if (developerEmails.includes(user.email) || (user.purchasedCourses && user.purchasedCourses.some(id => id.toString() === courseId))) {
                     hasPurchased = true;
                 }
             }
@@ -106,6 +108,7 @@ app.get('/api/course-details', async (req, res) => {
         if (!hasPurchased) {
             delete course.videoLinks;
             delete course.pdfLinks;
+            delete course.testLinks;
         }
 
         res.json({ ...course, hasPurchased });
@@ -126,7 +129,7 @@ app.post('/api/courses', async (req, res) => {
 
 // Update Course Basic Info
 app.post('/api/courses/update', async (req, res) => {
-    const { courseId, title, description, category, price, discountedPrice } = req.body;
+    const { courseId, title, description, category, price, discountedPrice, faculty, features } = req.body;
     if (!courseId || !ObjectId.isValid(courseId)) {
         return res.status(400).json({ error: 'Valid courseId is required' });
     }
@@ -139,7 +142,9 @@ app.post('/api/courses/update', async (req, res) => {
                 description, 
                 category, 
                 price: Number(price),
-                discountedPrice: (discountedPrice !== undefined && discountedPrice !== null && discountedPrice !== '') ? Number(discountedPrice) : null
+                discountedPrice: (discountedPrice !== undefined && discountedPrice !== null && discountedPrice !== '') ? Number(discountedPrice) : null,
+                faculty,
+                features
             } }
         );
         res.json({ message: 'Course updated successfully' });
@@ -147,10 +152,9 @@ app.post('/api/courses/update', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-// Update Course Content (Links)
+// Update Course Content (Links & Chapters)
 app.post('/api/update-course-content', async (req, res) => {
-    const { courseId, videoLinks, pdfLinks } = req.body;
+    const { courseId, videoLinks, pdfLinks, testLinks, chapters } = req.body;
     if (!courseId || !ObjectId.isValid(courseId)) {
         return res.status(400).json({ error: 'Valid courseId is required' });
     }
@@ -158,7 +162,7 @@ app.post('/api/update-course-content', async (req, res) => {
         const db = getDb();
         await db.collection('courses').updateOne(
             { _id: new ObjectId(courseId) },
-            { $set: { videoLinks, pdfLinks } }
+            { $set: { videoLinks, pdfLinks, testLinks, chapters } }
         );
         res.json({ message: 'Course content updated successfully' });
     } catch (error) {
@@ -184,6 +188,42 @@ app.post('/api/courses/delete', async (req, res) => {
     }
 });
 
+// Get Course Enrollment Stats
+app.get('/api/admin/course-stats', async (req, res) => {
+    const { courseId } = req.query;
+    if (!courseId || !ObjectId.isValid(courseId)) {
+        return res.status(400).json({ error: 'Valid courseId is required' });
+    }
+
+    try {
+        const db = getDb();
+        // Find users who have this courseId in their purchasedCourses array
+        const enrolledUsers = await db.collection('users').find({
+            purchasedCourses: new ObjectId(courseId)
+        }).project({ name: 1, email: 1, _id: 1 }).toArray();
+
+        res.json({
+            totalEnrolled: enrolledUsers.length,
+            users: enrolledUsers
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch enrollment stats' });
+    }
+});
+
+// Delete Account
+app.post('/api/delete-account', async (req, res) => {
+    const { userId, password } = req.body;
+    if (!userId || !password) return res.status(400).json({ error: 'Missing information' });
+
+    try {
+        await deleteUser(userId, password);
+        res.json({ success: true, message: 'Account permanently deleted' });
+    } catch (error) {
+        res.status(401).json({ error: error.message });
+    }
+});
+
 // User Registration
 app.post('/api/register', async (req, res) => {
     try {
@@ -200,7 +240,8 @@ app.post('/api/login', async (req, res) => {
         const result = await loginUser(req.body);
         res.json({ message: 'Login successful', userId: result.userId });
     } catch (error) {
-        res.status(401).json({ error: error.message });
+        // Specifically return the error message from loginUser (e.g., 'Invalid email or password')
+        res.status(401).json({ error: error.message || 'Login failed' });
     }
 });
 
@@ -243,7 +284,8 @@ app.get('/api/my-batches', async (req, res) => {
         const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        if (user.email === 'its.devloper.aditya@gmail.com') {
+        const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
+        if (developerEmails.includes(user.email)) {
             const allCourses = await db.collection('courses').find({}).toArray();
             return res.json(allCourses);
         }
@@ -270,8 +312,8 @@ app.post('/api/contact', async (req, res) => {
 // Create Payment Order
 app.post('/api/create-order', async (req, res) => {
     try {
-        const { courseId } = req.body;
-        const result = await createRazorpayOrder(courseId);
+        const { courseId, couponCode } = req.body;
+        const result = await createRazorpayOrder(courseId, couponCode);
         res.status(201).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -285,6 +327,114 @@ app.post('/api/payment/verify', async (req, res) => {
         res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+// --- COUPON ROUTES ---
+
+// Get all coupons (Admin)
+app.get('/api/admin/coupons', async (req, res) => {
+    try {
+        const db = getDb();
+        const coupons = await db.collection('coupons').find({}).toArray();
+        res.json(coupons);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch coupons' });
+    }
+});
+
+// Create a coupon (Admin)
+app.post('/api/admin/coupons', async (req, res) => {
+    const { code, discountPercentage } = req.body;
+    if (!code || !discountPercentage) {
+        return res.status(400).json({ error: 'Code and percentage are required' });
+    }
+    try {
+        const db = getDb();
+        const existing = await db.collection('coupons').findOne({ code: code.toUpperCase() });
+        if (existing) return res.status(400).json({ error: 'Coupon code already exists' });
+
+        await db.collection('coupons').insertOne({
+            code: code.toUpperCase(),
+            discountPercentage: Number(discountPercentage),
+            createdAt: new Date()
+        });
+        res.json({ success: true, message: 'Coupon created' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Delete a coupon (Admin)
+app.delete('/api/admin/coupons/:id', async (req, res) => {
+    try {
+        const db = getDb();
+        await db.collection('coupons').deleteOne({ _id: new ObjectId(req.params.id) });
+        res.json({ success: true, message: 'Coupon deleted' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Validate Coupon (User)
+app.post('/api/validate-coupon', async (req, res) => {
+    const { code } = req.body;
+    try {
+        const db = getDb();
+        const coupon = await db.collection('coupons').findOne({ code: code.toUpperCase() });
+        if (!coupon) return res.status(404).json({ error: 'Invalid coupon code' });
+        res.json({ discountPercentage: coupon.discountPercentage });
+    } catch (error) {
+        res.status(500).json({ error: 'Validation failed' });
+    }
+});
+
+// Get all registered users (Admin)
+app.get('/api/admin/all-users', async (req, res) => {
+    try {
+        const db = getDb();
+        const users = await db.collection('users').find({}).project({ 
+            name: 1, 
+            email: 1, 
+            photoUrl: 1, 
+            createdAt: 1 
+        }).toArray();
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
+// Get specific user details (Admin)
+app.get('/api/admin/user-details/:userId', async (req, res) => {
+    const { userId } = req.params;
+    if (!ObjectId.isValid(userId)) return res.status(400).json({ error: 'Invalid User ID' });
+
+    try {
+        const db = getDb();
+        const user = await db.collection('users').findOne({ _id: new ObjectId(userId) }, { projection: { password: 0 } });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        // Fetch purchased course details
+        let purchasedBatches = [];
+        if (user.purchasedCourses && user.purchasedCourses.length > 0) {
+            // Convert all IDs to valid ObjectIds for the query
+            const courseIds = user.purchasedCourses.map(id => {
+                try {
+                    return new ObjectId(id);
+                } catch (e) {
+                    return null;
+                }
+            }).filter(id => id !== null);
+
+            purchasedBatches = await db.collection('courses').find({
+                _id: { $in: courseIds }
+            }).project({ title: 1, category: 1, price: 1, discountedPrice: 1 }).toArray();
+        }
+
+        res.json({ ...user, purchasedBatches });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch user details' });
     }
 });
 
