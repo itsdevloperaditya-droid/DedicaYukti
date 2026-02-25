@@ -260,9 +260,10 @@
             <form id="course-form">
                 <div class="form-group"><label>Batch Title</label><input type="text" id="course-title" required></div>
                 <div class="form-group"><label>Category</label><input type="text" id="course-category" placeholder="e.g. Class 9th, JEE"></div>
+                <div class="form-group"><label>Description</label><textarea id="course-description" style="width:100%; padding:15px; border-radius:14px; border:2px solid #f1f5f9; min-height:80px;" required></textarea></div>
                 <div class="form-group"><label>Price (₹)</label><input type="number" id="course-price" required></div>
                 <div class="form-group"><label>Discounted Price (Optional ₹)</label><input type="number" id="course-discounted"></div>
-                <button type="submit" class="btn-login">Save Course Data</button>
+                <button type="submit" class="btn-login" id="save-course-btn">Save Course Data</button>
             </form>
         </div>
     </div>
@@ -406,19 +407,42 @@
 
         document.getElementById('course-form').onsubmit = async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('save-course-btn');
+            const originalText = btn.innerText;
+            
             const payload = {
                 title: document.getElementById('course-title').value,
                 category: document.getElementById('course-category').value,
+                description: document.getElementById('course-description').value,
                 price: document.getElementById('course-price').value,
                 discountedPrice: document.getElementById('course-discounted').value
             };
-            await fetch(`${API_URL}/courses`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            closeModal('course-modal');
-            loadAllData();
+
+            btn.innerText = 'Saving...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_URL}/courses`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    alert('✅ Course Saved Successfully!');
+                    closeModal('course-modal');
+                    document.getElementById('course-form').reset();
+                    loadAllData();
+                } else {
+                    const err = await res.json();
+                    alert('❌ Error: ' + err.error);
+                }
+            } catch (err) {
+                alert('❌ Failed to connect to server');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         };
     </script>
 </body>
