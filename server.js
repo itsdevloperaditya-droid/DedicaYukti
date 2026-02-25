@@ -34,6 +34,11 @@ const transporter = nodemailer.createTransport({
  * API ROUTES
  */
 
+// Root Route
+app.get('/', (req, res) => {
+    res.send('Backend is running successfully 🚀');
+});
+
 // Test Route
 app.get('/api/test', (req, res) => {
     res.json({ message: 'DedicaYukti backend running' });
