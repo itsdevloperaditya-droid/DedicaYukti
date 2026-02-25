@@ -12,22 +12,14 @@ const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// --- CORS CONFIGURATION ---
-const allowedOrigins = [
-    'https://dedicayuktiacademy.onrender.com',
-    'https://dedicayukti-admin.onrender.com'
-];
+// --- ADMIN CREDENTIALS ---
+const ADMIN_USER = 'admin_dedica';
+const ADMIN_PASS = 'Power@9090';
 
+// --- CORS CONFIGURATION ---
+// Relaxed for stability during deployment debugging
 app.use(cors({
-    origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
 }));
