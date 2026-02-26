@@ -3174,13 +3174,13 @@ body.dark-mode .google-btn:hover {
 }
 
 
-/* --- MODERN AUTH OVERLAY SECTION (Restored & Fixed) --- */
+/* --- MODERN AUTH OVERLAY SECTION (Fixed Visibility) --- */
 .modern-auth-overlay {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 3000;
-    background: rgba(11, 18, 32, 0.8);
+    background: rgba(15, 23, 42, 0.75); /* Darker backdrop to make modal pop in light mode */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     overflow-y: auto;
@@ -3210,6 +3210,10 @@ body.dark-mode .modern-auth-overlay {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
     animation: authBoxSlideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     margin: auto;
+}
+
+body.dark-mode .auth-container-glass {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes authBoxSlideUp {
@@ -3263,14 +3267,22 @@ body.dark-mode .modern-auth-overlay {
 .auth-header-visual h2 {
     font-size: 1.6rem;
     font-weight: 850;
-    color: var(--text-primary);
+    color: #0f172a; /* Explicit dark color for visibility */
     margin-bottom: 8px;
 }
 
+body.dark-mode .auth-header-visual h2 {
+    color: #f1f5f9;
+}
+
 .auth-header-visual p {
-    color: var(--text-muted);
+    color: #64748b; /* Explicit muted color for visibility */
     font-size: 0.95rem;
     font-weight: 600;
+}
+
+body.dark-mode .auth-header-visual p {
+    color: #94a3b8;
 }
 
 /* Auth Tabs */
@@ -3291,7 +3303,7 @@ body.dark-mode .modern-auth-overlay {
     padding: 12px;
     font-weight: 800;
     font-size: 0.95rem;
-    color: var(--text-muted);
+    color: #64748b; /* Visible color for light mode */
     cursor: pointer;
     border-radius: 12px;
     transition: all 0.3s;
@@ -3299,8 +3311,12 @@ body.dark-mode .modern-auth-overlay {
     z-index: 1;
 }
 
+body.dark-mode .tab-btn-modern {
+    color: #94a3b8;
+}
+
 .tab-btn-modern.active {
-    color: white;
+    color: white !important;
     background: var(--primary-gradient);
 }
 
@@ -3312,11 +3328,6 @@ body.dark-mode .modern-auth-overlay {
     animation: authFadeIn 0.3s ease-out;
 }
 
-@keyframes authFadeIn {
-    from { opacity: 0; transform: translateX(10px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
 .input-group-modern {
     display: flex;
     flex-direction: column;
@@ -3326,9 +3337,13 @@ body.dark-mode .modern-auth-overlay {
 .input-group-modern label {
     font-size: 0.85rem;
     font-weight: 800;
-    color: var(--text-secondary);
+    color: #334155; /* Explicit visible label color */
     padding-left: 4px;
     display: block;
+}
+
+body.dark-mode .input-group-modern label {
+    color: #cbd5e1;
 }
 
 .input-field-wrapper {
@@ -3340,7 +3355,7 @@ body.dark-mode .modern-auth-overlay {
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
+    color: #94a3b8;
     font-size: 1rem;
     transition: color 0.3s;
 }
@@ -3348,18 +3363,23 @@ body.dark-mode .modern-auth-overlay {
 .input-field-wrapper input {
     width: 100%;
     padding: 14px 16px 14px 48px !important;
-    background: var(--bg-primary) !important;
-    border: 2px solid var(--border-light) !important;
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
     border-radius: 14px !important;
     font-size: 0.95rem !important;
     font-weight: 700 !important;
-    color: var(--text-primary) !important;
+    color: #0f172a !important;
     transition: all 0.3s !important;
+}
+
+body.dark-mode .input-field-wrapper input {
+    background: #0f172a !important;
+    border: 2px solid #334155 !important;
+    color: #f1f5f9 !important;
 }
 
 .input-field-wrapper input:focus {
     border-color: var(--accent) !important;
-    background: var(--bg-secondary) !important;
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
 }
 
