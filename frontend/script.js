@@ -1,5 +1,5 @@
 // Production API URL for Render
-const API_URL = 'https://dedicayukti.onrender.com/api';
+const API_URL = 'https://dedicayukti-be.onrender.com/api';
 const RAZORPAY_KEY_ID = 'rzp_live_SJWx8xpXBRPVsI';
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
@@ -1905,71 +1905,6 @@ async function verifyPayment(paymentResponse, courseId) {
 
 
 /**
- * --- GOOGLE LOGIN LOGIC ---
- */
-const GOOGLE_CLIENT_ID = '537837416637-cgfl4j0k14hijtns9qcltllq41ehmv82.apps.googleusercontent.com';
-
-function initGoogleLogin() {
-    if (typeof google === 'undefined') {
-        setTimeout(initGoogleLogin, 500);
-        return;
-    }
-
-    google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse
-    });
-
-    const container = document.getElementById('google-login-container');
-    if (container) {
-        google.accounts.id.renderButton(container, {
-            theme: document.body.classList.contains('dark-mode') ? 'filled_black' : 'outline',
-            size: 'large',
-            text: 'continue_with',
-            shape: 'pill',
-            width: 300
-        });
-    }
-}
-
-async function handleGoogleResponse(response) {
-    const idToken = response.credential;
-    
-    try {
-        const res = await fetch(`${API_URL}/auth/google`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: idToken })
-        });
-
-        const data = await res.json();
-        if (res.ok && data.userId) {
-            currentUser = { userId: data.userId, email: data.email };
-            localStorage.setItem('user', JSON.stringify(currentUser));
-            
-            triggerCelebration();
-            showToast('Google Login Successful!', 'success');
-
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        } else {
-            showToast(data.error || 'Google Login failed', 'error');
-        }
-    } catch (err) {
-        console.error('Google Auth Error:', err);
-        showToast('Server error during Google Login', 'error');
-    }
-}
-
-// Ensure Google Login is initialized after DOM load
-document.addEventListener('DOMContentLoaded', () => {
-    initGoogleLogin();
-});
-
-
-
-/**
  * --- ADMIN: BATCH THUMBNAIL UPLOAD LOGIC ---
  */
 function handleAdminThumbnailSelect(event) {
@@ -1978,15 +1913,15 @@ function handleAdminThumbnailSelect(event) {
 
     // Validate size (limit to 1MB for base64 efficiency)
     if (file.size > 1024 * 1024) {
-        showToast(\x27Image too large. Please select an image under 1MB.\x27, \x27error\x27);
+        showToast('Image too large. Please select an image under 1MB.', 'error');
         return;
     }
 
     const reader = new FileReader();
     reader.onload = function(e) {
         const base64 = e.target.result;
-        document.getElementById(\x27edit-course-thumb-preview\x27).src = base64;
-        document.getElementById(\x27edit-course-thumb-base64\x27).value = base64;
+        document.getElementById('edit-course-thumb-preview').src = base64;
+        document.getElementById('edit-course-thumb-base64').value = base64;
     };
     reader.readAsDataURL(file);
 }
