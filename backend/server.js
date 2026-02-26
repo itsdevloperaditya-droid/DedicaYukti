@@ -194,18 +194,24 @@ app.post('/api/courses/update', async (req, res) => {
     }
     try {
         const db = getDb();
+        const updateData = {};
+        if (title !== undefined) updateData.title = title;
+        if (description !== undefined) updateData.description = description;
+        if (category !== undefined) updateData.category = category;
+        if (thumbnail !== undefined) {
+            console.log(`📸 Updating thumbnail for course ${courseId}. Length: ${thumbnail ? thumbnail.length : 0}`);
+            updateData.thumbnail = thumbnail;
+        }
+        if (price !== undefined) updateData.price = Number(price);
+        if (discountedPrice !== undefined) {
+            updateData.discountedPrice = (discountedPrice !== null && discountedPrice !== '') ? Number(discountedPrice) : null;
+        }
+        if (faculty !== undefined) updateData.faculty = faculty;
+        if (features !== undefined) updateData.features = features;
+
         await db.collection('courses').updateOne(
             { _id: new ObjectId(courseId) },
-            { $set: { 
-                title, 
-                description, 
-                category, 
-                thumbnail,
-                price: Number(price),
-                discountedPrice: (discountedPrice !== undefined && discountedPrice !== null && discountedPrice !== '') ? Number(discountedPrice) : null,
-                faculty,
-                features
-            } }
+            { $set: updateData }
         );
         res.json({ message: 'Course updated successfully' });
     } catch (error) {

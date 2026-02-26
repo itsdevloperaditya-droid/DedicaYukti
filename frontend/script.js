@@ -841,6 +841,7 @@ async function saveFacultyFeatures(e) {
     const category = document.getElementById('unified-cat').value;
     const price = document.getElementById('unified-price').value;
     const discountedPrice = document.getElementById('unified-discount').value;
+    const thumbnail = document.getElementById('edit-course-thumb-base64').value;
 
     try {
         const res = await fetch(`${API_URL}/courses/update`, {
@@ -851,6 +852,7 @@ async function saveFacultyFeatures(e) {
                 title,
                 description,
                 category,
+                thumbnail,
                 price,
                 discountedPrice,
                 faculty: { name, photo, bio },
@@ -964,7 +966,9 @@ if (unifiedInfoForm) {
             const data = await res.json();
             if (res.ok) {
                 showToast('Basic Info & Price Updated!', 'success');
+                // Refresh both the dashboard list and the main course grid
                 loadAdminDashboard();
+                fetchCourses(); 
             } else {
                 showToast(data.error || 'Update failed', 'error');
             }
@@ -1169,6 +1173,8 @@ async function fetchCourses() {
 
         const response = await fetch(`${API_URL}/courses`);
         const courses = await response.json();
+        console.log("📡 API Response (Courses):", courses);
+        
         container.innerHTML = '';
         if (!courses || courses.length === 0) {
             container.innerHTML = '<p class="loader">No courses available.</p>';
@@ -1194,14 +1200,21 @@ async function fetchCourses() {
 
             // Thumbnail Logic: Custom first, then category-based
             const cat = (course.category || 'general').toLowerCase();
-            let thumbUrl = course.thumbnail || '';
+            let thumbUrl = (course.thumbnail && course.thumbnail.trim() !== '') ? course.thumbnail : '';
             
             if (!thumbUrl) {
-                thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
-                if (cat.includes('jee') || cat.includes('math')) thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
-                if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
-                if (cat.includes('physic')) thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
-                if (cat.includes('chemis')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+                // Fallback URLs
+                if (cat.includes('jee') || cat.includes('math')) {
+                    thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
+                } else if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) {
+                    thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+                } else if (cat.includes('physic')) {
+                    thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
+                } else if (cat.includes('chemis')) {
+                    thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+                } else {
+                    thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
+                }
             }
 
             const card = document.createElement('div');
