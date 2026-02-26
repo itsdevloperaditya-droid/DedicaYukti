@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DedicaYukti | Professional Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #3b82f6;
@@ -17,10 +18,11 @@
             --text-main: #0f172a;
             --text-muted: #64748b;
             --sidebar-width: 260px;
+            --border: #e2e8f0;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-        body { background: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
 
         /* Sidebar Styling */
         .sidebar {
@@ -32,19 +34,12 @@
             flex-direction: column;
             position: fixed;
             height: 100vh;
-            transition: all 0.3s;
+            z-index: 100;
         }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 3rem;
-            padding: 0 0.5rem;
-        }
-
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 3rem; padding: 0 0.5rem; }
         .logo-area i { font-size: 1.8rem; color: var(--primary); }
-        .logo-area span { font-size: 1.4rem; font-weight: 850; letter-spacing: -0.5px; }
+        .logo-area span { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
 
         .nav-links { display: flex; flex-direction: column; gap: 8px; flex: 1; }
         .nav-item {
@@ -60,84 +55,82 @@
             text-decoration: none;
         }
 
-        .nav-item:hover, .nav-item.active {
-            background: rgba(59, 130, 246, 0.15);
-            color: white;
-        }
-
+        .nav-item:hover, .nav-item.active { background: rgba(59, 130, 246, 0.15); color: white; }
         .nav-item.active { background: var(--primary); color: white; }
         .logout-btn { margin-top: auto; color: #f87171; border: 1.5px solid rgba(248, 113, 113, 0.2); }
         .logout-btn:hover { background: var(--danger); color: white; }
 
-        /* Main Content Area */
-        .main-wrapper { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem; }
+        /* Main Content */
+        .main-wrapper { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem; width: calc(100% - var(--sidebar-width)); }
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
-        .top-header h1 { font-size: 1.8rem; font-weight: 850; letter-spacing: -0.5px; }
+        .top-header h1 { font-size: 1.8rem; font-weight: 800; }
 
-        /* Stats Section */
+        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-        .stat-card {
-            background: var(--bg-card);
-            padding: 1.5rem;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .stat-icon {
-            width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
-        }
-
+        .stat-card { background: var(--bg-card); padding: 1.5rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 1rem; }
+        .stat-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
         .blue { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
         .green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
         .purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
-
-        .stat-info h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .stat-info h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
         .stat-info p { font-size: 1.5rem; font-weight: 800; }
 
-        /* Content Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Data Tables */
+        /* Table */
         .data-table-card { background: var(--bg-card); border-radius: 24px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.02); overflow: hidden; }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 0 0.5rem; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .btn-add { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-
+        
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 16px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; }
+        th { text-align: left; padding: 16px; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; border-bottom: 1px solid #f1f5f9; }
         td { padding: 16px; border-bottom: 1px solid #f8fafc; font-weight: 500; }
-        .action-btns { display: flex; gap: 10px; }
+        .action-btns { display: flex; gap: 8px; }
         .btn-icon { width: 36px; height: 36px; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-edit { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
         .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-        /* Login Overlay */
-        #login-overlay { position: fixed; inset: 0; background: #0f172a; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: white; padding: 3rem; border-radius: 32px; width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .login-card h2 { font-size: 2rem; font-weight: 850; margin-bottom: 0.5rem; text-align: center; }
-        .login-card p { color: var(--text-muted); text-align: center; margin-bottom: 2rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; }
-        .form-group input { width: 100%; height: 52px; border-radius: 14px; border: 2px solid #f1f5f9; padding: 0 16px; font-size: 1rem; transition: 0.2s; }
-        .form-group input:focus { border-color: var(--primary); outline: none; background: #f8fafc; }
-        .btn-login { width: 100%; height: 52px; border-radius: 14px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; margin-top: 1rem; }
-        .btn-login:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        /* Sections */
+        .section { display: none; }
+        .section.active { display: block; }
 
         /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 3000; align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 28px; padding: 2rem; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 800px; border-radius: 28px; padding: 0; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 2rem; overflow-y: auto; flex: 1; }
         .close-modal { font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
 
-        /* Mobile Responsive */
+        /* Tabs inside Modal */
+        .modal-tabs { display: flex; background: #f8fafc; padding: 0.5rem; gap: 8px; border-bottom: 1px solid #f1f5f9; }
+        .m-tab { padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
+        .m-tab.active { background: white; color: var(--primary); shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* Form */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .full-width { grid-column: span 2; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--border); font-size: 0.95rem; outline: none; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); }
+        .btn-submit { width: 100%; padding: 14px; border-radius: 14px; border: none; background: var(--primary); color: white; font-weight: 700; cursor: pointer; margin-top: 1rem; }
+
+        /* Login Overlay */
+        #login-overlay { position: fixed; inset: 0; background: #0f172a; z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 3rem; border-radius: 32px; width: 400px; }
+
+        /* Toast */
+        #toast { position: fixed; bottom: 30px; right: 30px; padding: 16px 24px; background: #1e293b; color: white; border-radius: 12px; transform: translateY(100px); transition: 0.3s; z-index: 3000; display: flex; align-items: center; gap: 12px; font-weight: 600; }
+        #toast.show { transform: translateY(0); }
+        
+        /* Faculty Preview */
+        .faculty-preview-box { display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1rem; border-radius: 16px; margin-bottom: 1rem; }
+        .faculty-img-preview { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #e2e8f0; }
+
+        .tag-chip { padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
+
         @media (max-width: 768px) {
-            .sidebar { width: 0; padding: 0; overflow: hidden; }
-            .main-wrapper { margin-left: 0; padding: 1.5rem; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .sidebar { transform: translateX(-100%); transition: 0.3s; }
+            .sidebar.active { transform: translateX(0); }
+            .main-wrapper { margin-left: 0; width: 100%; padding: 1.5rem; }
         }
     </style>
 </head>
@@ -146,96 +139,87 @@
     <!-- Login Overlay -->
     <div id="login-overlay">
         <div class="login-card">
-            <h2>Admin Login</h2>
-            <p>Enter your credentials to access the dashboard</p>
+            <h2 style="margin-bottom: 8px;">Admin Login</h2>
+            <p style="color: var(--text-muted); margin-bottom: 24px;">Secure dashboard access</p>
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" id="admin-user" placeholder="admin_username" autocomplete="username">
+                <input type="text" id="admin-user" placeholder="admin_dedica">
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="admin-pass" placeholder="••••••••" autocomplete="current-password">
+                <input type="password" id="admin-pass" placeholder="••••••••">
             </div>
-            <button class="btn-login" id="login-submit-btn" onclick="adminLogin()">
-                <span>Login to Dashboard</span>
-            </button>
+            <button class="btn-submit" onclick="adminLogin()" id="login-btn">Login to Dashboard</button>
         </div>
     </div>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="logo-area">
-            <i class="fas fa-shield-alt"></i>
-            <span>DedicaYukti</span>
-        </div>
+        <div class="logo-area"><i class="fas fa-graduation-cap"></i> <span>DedicaYukti</span></div>
         <div class="nav-links">
-            <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-grid-2"></i> Dashboard</div>
-            <div class="nav-item" onclick="showSection('courses')"><i class="fas fa-book-open"></i> Manage Courses</div>
-            <div class="nav-item" onclick="showSection('users')"><i class="fas fa-user-graduate"></i> Students</div>
-            <div class="nav-item" onclick="showSection('coupons')"><i class="fas fa-tags"></i> Coupons</div>
+            <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</div>
+            <div class="nav-item" onclick="showSection('courses')"><i class="fas fa-book"></i> Courses</div>
+            <div class="nav-item" onclick="showSection('users')"><i class="fas fa-users"></i> Students</div>
+            <div class="nav-item" onclick="showSection('coupons')"><i class="fas fa-tag"></i> Coupons</div>
             <a href="#" class="nav-item logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Wrapper -->
     <div class="main-wrapper">
-        <!-- Dashboard Overview -->
+        
+        <!-- Dashboard Section -->
         <div id="dashboard-section" class="section active">
-            <div class="top-header">
-                <h1>Dashboard Overview</h1>
-                <div id="system-status"><span class="tag-chip" style="background:rgba(16,185,129,0.1); color:var(--success);">● System Live</span></div>
-            </div>
-
+            <div class="top-header"><h1>Dashboard</h1></div>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+                    <div class="stat-icon blue"><i class="fas fa-book-open"></i></div>
                     <div class="stat-info"><h3>Total Courses</h3><p id="stat-courses">0</p></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon purple"><i class="fas fa-users"></i></div>
-                    <div class="stat-info"><h3>Total Students</h3><p id="stat-users">0</p></div>
+                    <div class="stat-icon purple"><i class="fas fa-user-graduate"></i></div>
+                    <div class="stat-info"><h3>Students</h3><p id="stat-users">0</p></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon green"><i class="fas fa-indian-rupee-sign"></i></div>
-                    <div class="stat-info"><h3>Potential Rev.</h3><p id="stat-revenue">₹0</p></div>
+                    <div class="stat-icon green"><i class="fas fa-wallet"></i></div>
+                    <div class="stat-info"><h3>Revenue</h3><p id="stat-revenue">₹0</p></div>
                 </div>
             </div>
-
             <div class="data-table-card">
-                <div class="table-header"><h3>Recent Activity</h3></div>
-                <div style="padding: 40px; text-align: center; color: var(--text-muted);">
-                    <i class="fas fa-clock-rotate-left" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                    System initialized. Ready to manage courses.
-                </div>
+                <div class="table-header"><h3>Recent Students</h3></div>
+                <table id="recent-users-table">
+                    <thead><tr><th>Name</th><th>Email</th><th>Date</th></tr></thead>
+                    <tbody id="recent-users-body"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Courses Management -->
+        <!-- Courses Section -->
         <div id="courses-section" class="section">
             <div class="top-header">
-                <h1>Course Management</h1>
-                <button class="btn-add" onclick="openCourseModal()"><i class="fas fa-plus"></i> Create New Course</button>
+                <h1>Manage Courses</h1>
+                <button class="btn-add" onclick="openCourseModal()"><i class="fas fa-plus"></i> Create Course</button>
             </div>
             <div class="data-table-card">
                 <table id="courses-table">
-                    <thead><tr><th>Batch Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Course Title</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
                     <tbody id="courses-body"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Users Management -->
+        <!-- Users Section -->
         <div id="users-section" class="section">
-            <div class="top-header"><h1>Student List</h1></div>
+            <div class="top-header"><h1>Student Directory</h1></div>
             <div class="data-table-card">
                 <table id="users-table">
-                    <thead><tr><th>Name</th><th>Email</th><th>Enrolled In</th></tr></thead>
+                    <thead><tr><th>Student Name</th><th>Email</th><th>Joined</th></tr></thead>
                     <tbody id="users-body"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Coupons Management -->
+        <!-- Coupons Section -->
         <div id="coupons-section" class="section">
             <div class="top-header">
                 <h1>Coupon Codes</h1>
@@ -243,50 +227,108 @@
             </div>
             <div class="data-table-card">
                 <table id="coupons-table">
-                    <thead><tr><th>Code</th><th>Discount %</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Code</th><th>Discount %</th><th>Date</th><th>Actions</th></tr></thead>
                     <tbody id="coupons-body"></tbody>
                 </table>
             </div>
         </div>
+
     </div>
 
-    <!-- Modals -->
+    <!-- Course Modal -->
     <div id="course-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">Create Course</h2>
+                <h2 id="course-modal-title">Course Editor</h2>
                 <i class="fas fa-times close-modal" onclick="closeModal('course-modal')"></i>
             </div>
-            <form id="course-form">
-                <div class="form-group"><label>Batch Title</label><input type="text" id="course-title" required></div>
-                <div class="form-group"><label>Category</label><input type="text" id="course-category" placeholder="e.g. Class 9th, JEE"></div>
-                <div class="form-group"><label>Description</label><textarea id="course-description" style="width:100%; padding:15px; border-radius:14px; border:2px solid #f1f5f9; min-height:80px;" required></textarea></div>
-                <div class="form-group"><label>Price (₹)</label><input type="number" id="course-price" required></div>
-                <div class="form-group"><label>Discounted Price (Optional ₹)</label><input type="number" id="course-discounted"></div>
-                <button type="submit" class="btn-login" id="save-course-btn">Save Course Data</button>
-            </form>
+            <div class="modal-tabs">
+                <div class="m-tab active" onclick="switchModalTab('basic')">Basic Info</div>
+                <div class="m-tab" onclick="switchModalTab('faculty')">Faculty & Features</div>
+                <div class="m-tab" onclick="switchModalTab('content')">Course Content</div>
+            </div>
+            <div class="modal-body">
+                <form id="course-form">
+                    <input type="hidden" id="edit-id">
+                    
+                    <!-- Basic Info Tab -->
+                    <div id="tab-basic" class="modal-tab-content">
+                        <div class="form-grid">
+                            <div class="form-group full-width"><label>Course Title</label><input type="text" id="c-title" required></div>
+                            <div class="form-group full-width"><label>Description</label><textarea id="c-desc" rows="4" required></textarea></div>
+                            <div class="form-group"><label>Category</label><input type="text" id="c-cat" placeholder="e.g. Science"></div>
+                            <div class="form-group"><label>Original Price (₹)</label><input type="number" id="c-price" required></div>
+                            <div class="form-group"><label>Discounted Price (₹)</label><input type="number" id="c-disc"></div>
+                        </div>
+                    </div>
+
+                    <!-- Faculty Tab -->
+                    <div id="tab-faculty" class="modal-tab-content" style="display:none;">
+                        <div class="faculty-preview-box">
+                            <img src="" id="faculty-img-preview" class="faculty-img-preview">
+                            <div>
+                                <label style="display:block; margin-bottom:4px; font-weight:600;">Faculty Photo</label>
+                                <input type="file" id="f-photo-input" accept="image/*" style="font-size:0.8rem;">
+                                <input type="hidden" id="f-photo-url">
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Faculty Name</label><input type="text" id="f-name"></div>
+                        <div class="form-group"><label>Faculty Bio</label><textarea id="f-bio" rows="2"></textarea></div>
+                        <div class="form-group">
+                            <label>Key Features (One per line)</label>
+                            <textarea id="c-features" rows="4" placeholder="• 24/7 Support&#10;• Live Classes"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Content Tab -->
+                    <div id="tab-content" class="modal-tab-content" style="display:none;">
+                        <div class="form-group"><label>Video Links (One per line)</label><textarea id="c-videos" rows="4" placeholder="https://youtube.com/..."></textarea></div>
+                        <div class="form-group"><label>PDF/Notes Links (One per line)</label><textarea id="c-pdfs" rows="4" placeholder="https://drive.google.com/..."></textarea></div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="save-course-btn">Save Course Information</button>
+                </form>
+            </div>
         </div>
     </div>
 
+    <!-- Coupon Modal -->
+    <div id="coupon-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>New Coupon</h2>
+                <i class="fas fa-times close-modal" onclick="closeModal('coupon-modal')"></i>
+            </div>
+            <div class="modal-body">
+                <form id="coupon-form">
+                    <div class="form-group"><label>Coupon Code</label><input type="text" id="cp-code" placeholder="WELCOME10" style="text-transform:uppercase;" required></div>
+                    <div class="form-group"><label>Discount (%)</label><input type="number" id="cp-percent" min="1" max="100" required></div>
+                    <button type="submit" class="btn-submit">Create Coupon</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg">Success</span></div>
+
     <script>
         const API_URL = 'https://dedicayukti.onrender.com/api';
-        let adminToken = localStorage.getItem('adminToken');
+        let allCourses = [];
 
-        // Initial check
-        if (adminToken) {
+        // Auth Check
+        if (localStorage.getItem('adminToken')) {
             document.getElementById('login-overlay').style.display = 'none';
-            loadAllData();
+            init();
         }
 
         async function adminLogin() {
             const username = document.getElementById('admin-user').value;
             const password = document.getElementById('admin-pass').value;
-            const btn = document.getElementById('login-submit-btn');
+            const btn = document.getElementById('login-btn');
 
-            if (!username || !password) return alert('Please fill credentials');
-
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+            if (!username || !password) return showToast('Please enter credentials', 'error');
             
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
             try {
                 const res = await fetch(`${API_URL}/admin/login`, {
                     method: 'POST',
@@ -294,35 +336,27 @@
                     body: JSON.stringify({ username, password })
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     localStorage.setItem('adminToken', data.token);
                     document.getElementById('login-overlay').style.display = 'none';
-                    loadAllData();
+                    init();
                 } else {
-                    alert(data.error || 'Login Failed');
+                    showToast(data.error || 'Login failed', 'error');
                 }
-            } catch (err) {
-                alert('Backend Connection Error. Make sure backend is running.');
-            } finally {
-                btn.innerHTML = 'Login to Dashboard';
-            }
+            } catch (err) { showToast('Backend error'); }
+            finally { btn.innerText = 'Login to Dashboard'; }
         }
 
-        function logout() {
-            localStorage.removeItem('adminToken');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('adminToken'); location.reload(); }
 
         function showSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
             document.getElementById(id + '-section').classList.add('active');
             event.currentTarget.classList.add('active');
         }
 
-        async function loadAllData() {
+        function init() {
             fetchStats();
             fetchCourses();
             fetchUsers();
@@ -332,118 +366,226 @@
         async function fetchStats() {
             try {
                 const res = await fetch(`${API_URL}/admin/stats`);
-                const data = await res.json();
-                document.getElementById('stat-courses').innerText = data.totalCourses;
-                document.getElementById('stat-users').innerText = data.totalUsers;
-                document.getElementById('stat-revenue').innerText = '₹' + data.totalPotentialRevenue.toLocaleString();
-            } catch (err) {}
+                const d = await res.json();
+                document.getElementById('stat-courses').innerText = d.totalCourses;
+                document.getElementById('stat-users').innerText = d.totalUsers;
+                document.getElementById('stat-revenue').innerText = '₹' + d.totalPotentialRevenue.toLocaleString();
+            } catch (e) {}
         }
 
         async function fetchCourses() {
             try {
                 const res = await fetch(`${API_URL}/courses`);
-                const courses = await res.json();
-                const body = document.getElementById('courses-body');
-                body.innerHTML = courses.map(c => `
+                allCourses = await res.json();
+                document.getElementById('courses-body').innerHTML = allCourses.map(c => `
                     <tr>
-                        <td>${c.title}</td>
-                        <td>${c.category}</td>
+                        <td><strong>${c.title}</strong></td>
+                        <td><span class="tag-chip blue">${c.category || 'N/A'}</span></td>
                         <td>₹${c.discountedPrice || c.price}</td>
                         <td>
                             <div class="action-btns">
+                                <button class="btn-icon btn-edit" onclick="editCourse('${c._id}')"><i class="fas fa-edit"></i></button>
                                 <button class="btn-icon btn-delete" onclick="deleteCourse('${c._id}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
                 `).join('');
-            } catch (err) {}
+            } catch (e) {}
         }
 
         async function fetchUsers() {
             try {
                 const res = await fetch(`${API_URL}/admin/all-users`);
                 const users = await res.json();
-                const body = document.getElementById('users-body');
-                body.innerHTML = users.map(u => `
+                const html = users.map(u => `
                     <tr>
                         <td>${u.name || 'Student'}</td>
                         <td>${u.email}</td>
-                        <td>Enrolled</td>
+                        <td>${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</td>
                     </tr>
                 `).join('');
-            } catch (err) {}
+                document.getElementById('users-body').innerHTML = html;
+                document.getElementById('recent-users-body').innerHTML = html.slice(0, 5);
+            } catch (e) {}
         }
 
         async function fetchCoupons() {
             try {
                 const res = await fetch(`${API_URL}/admin/coupons`);
                 const coupons = await res.json();
-                const body = document.getElementById('coupons-body');
-                body.innerHTML = coupons.map(c => `
+                document.getElementById('coupons-body').innerHTML = coupons.map(c => `
                     <tr>
-                        <td>${c.code}</td>
+                        <td><code>${c.code}</code></td>
                         <td>${c.discountPercentage}%</td>
-                        <td>
-                            <button class="btn-icon btn-delete" onclick="deleteCoupon('${c._id}')"><i class="fas fa-trash"></i></button>
-                        </td>
+                        <td>${new Date(c.createdAt).toLocaleDateString()}</td>
+                        <td><button class="btn-icon btn-delete" onclick="deleteCoupon('${c._id}')"><i class="fas fa-trash"></i></button></td>
                     </tr>
                 `).join('');
-            } catch (err) {}
+            } catch (e) {}
         }
 
-        // --- CRUD ACTIONS ---
-        async function deleteCourse(id) {
-            if(!confirm('Are you sure you want to delete this course?')) return;
-            await fetch(`${API_URL}/courses/delete`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ courseId: id })
-            });
-            fetchCourses(); fetchStats();
-        }
-
-        function openCourseModal() { document.getElementById('course-modal').style.display = 'flex'; }
+        // --- Modals Logic ---
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openCouponModal() { document.getElementById('coupon-form').reset(); document.getElementById('coupon-modal').style.display = 'flex'; }
+        
+        function openCourseModal() {
+            document.getElementById('course-modal-title').innerText = 'Create New Course';
+            document.getElementById('course-form').reset();
+            document.getElementById('edit-id').value = '';
+            document.getElementById('f-photo-url').value = '';
+            document.getElementById('faculty-img-preview').src = 'https://via.placeholder.com/60';
+            switchModalTab('basic');
+            document.getElementById('course-modal').style.display = 'flex';
+        }
+
+        function editCourse(id) {
+            const c = allCourses.find(x => x._id === id);
+            if (!c) return;
+            document.getElementById('course-modal-title').innerText = 'Edit Course';
+            document.getElementById('edit-id').value = c._id;
+            document.getElementById('c-title').value = c.title;
+            document.getElementById('c-desc').value = c.description;
+            document.getElementById('c-cat').value = c.category || '';
+            document.getElementById('c-price').value = c.price;
+            document.getElementById('c-disc').value = c.discountedPrice || '';
+            
+            // Faculty
+            document.getElementById('f-name').value = c.faculty?.name || '';
+            document.getElementById('f-bio').value = c.faculty?.bio || '';
+            document.getElementById('f-photo-url').value = c.faculty?.photo || '';
+            document.getElementById('faculty-img-preview').src = c.faculty?.photo || 'https://via.placeholder.com/60';
+            
+            // Features & Links
+            document.getElementById('c-features').value = (c.features || []).join('\n');
+            document.getElementById('c-videos').value = (c.videoLinks || []).join('\n');
+            document.getElementById('c-pdfs').value = (c.pdfLinks || []).join('\n');
+
+            switchModalTab('basic');
+            document.getElementById('course-modal').style.display = 'flex';
+        }
+
+        function switchModalTab(tab) {
+            document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-content').forEach(c => c.style.display = 'none');
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tab).style.display = 'block';
+        }
+
+        // --- Actions ---
+        document.getElementById('f-photo-input').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    document.getElementById('faculty-img-preview').src = ev.target.result;
+                    document.getElementById('f-photo-url').value = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
         document.getElementById('course-form').onsubmit = async (e) => {
             e.preventDefault();
+            const id = document.getElementById('edit-id').value;
             const btn = document.getElementById('save-course-btn');
-            const originalText = btn.innerText;
             
             const payload = {
-                title: document.getElementById('course-title').value,
-                category: document.getElementById('course-category').value,
-                description: document.getElementById('course-description').value,
-                price: document.getElementById('course-price').value,
-                discountedPrice: document.getElementById('course-discounted').value
+                courseId: id,
+                title: document.getElementById('c-title').value,
+                description: document.getElementById('c-desc').value,
+                category: document.getElementById('c-cat').value,
+                price: document.getElementById('c-price').value,
+                discountedPrice: document.getElementById('c-disc').value,
+                faculty: {
+                    name: document.getElementById('f-name').value,
+                    bio: document.getElementById('f-bio').value,
+                    photo: document.getElementById('f-photo-url').value
+                },
+                features: document.getElementById('c-features').value.split('\n').map(x => x.trim()).filter(x => x),
+                videoLinks: document.getElementById('c-videos').value.split('\n').map(x => x.trim()).filter(x => x),
+                pdfLinks: document.getElementById('c-pdfs').value.split('\n').map(x => x.trim()).filter(x => x)
             };
 
-            btn.innerText = 'Saving...';
-            btn.disabled = true;
-
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             try {
-                const res = await fetch(`${API_URL}/courses`, {
+                const endpoint = id ? `${API_URL}/courses/update` : `${API_URL}/courses`;
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 
                 if (res.ok) {
-                    alert('✅ Course Saved Successfully!');
+                    if (id) {
+                        // Update Links separately as well (per backend structure)
+                        await fetch(`${API_URL}/update-course-content`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                courseId: id,
+                                videoLinks: payload.videoLinks,
+                                pdfLinks: payload.pdfLinks
+                            })
+                        });
+                    }
+                    showToast('Course saved successfully!');
                     closeModal('course-modal');
-                    document.getElementById('course-form').reset();
-                    loadAllData();
+                    init();
                 } else {
                     const err = await res.json();
-                    alert('❌ Error: ' + err.error);
+                    showToast(err.error, 'error');
                 }
-            } catch (err) {
-                alert('❌ Failed to connect to server');
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
+            } catch (e) { showToast('Server connection failed'); }
+            finally { btn.innerText = 'Save Course Information'; }
         };
+
+        document.getElementById('coupon-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('cp-code').value;
+            const discountPercentage = document.getElementById('cp-percent').value;
+            try {
+                const res = await fetch(`${API_URL}/admin/coupons`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, discountPercentage })
+                });
+                if (res.ok) {
+                    showToast('Coupon created!');
+                    closeModal('coupon-modal');
+                    fetchCoupons();
+                } else {
+                    const d = await res.json();
+                    showToast(d.error, 'error');
+                }
+            } catch (e) {}
+        };
+
+        async function deleteCourse(id) {
+            if (!confirm('Delete this course permanently?')) return;
+            await fetch(`${API_URL}/courses/delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ courseId: id })
+            });
+            showToast('Course deleted');
+            init();
+        }
+
+        async function deleteCoupon(id) {
+            if (!confirm('Delete this coupon?')) return;
+            await fetch(`${API_URL}/admin/coupons/${id}`, { method: 'DELETE' });
+            showToast('Coupon deleted');
+            fetchCoupons();
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            const m = document.getElementById('toast-msg');
+            m.innerText = msg;
+            t.style.background = type === 'error' ? '#ef4444' : '#1e293b';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
     </script>
 </body>
 </html>
