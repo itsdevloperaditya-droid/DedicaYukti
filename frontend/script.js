@@ -1186,7 +1186,6 @@ async function fetchCourses() {
                 <div class="course-card-banner">
                     <img src="${thumbUrl}" alt="${course.title}" class="course-thumb-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';">
                     <div class="banner-overlay-soft"></div>
-                    <span class="course-category">${course.category || 'General'}</span>
                 </div>
                 <div class="course-card-content">
                     <h2 class="course-title-modern">${course.title}</h2>
