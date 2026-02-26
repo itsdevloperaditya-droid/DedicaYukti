@@ -334,7 +334,7 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
                 `;
             } else {
                 actionContainer.innerHTML = `
-                    <button class="enroll-btn-large" onclick="buyCourse('${course._id}', '${course.title}')">
+                    <button class="enroll-btn-large" onclick="openOrderSummary()">
                         <i class="fas fa-shopping-cart"></i> Enroll in Batch Now
                     </button>
                 `;
@@ -1878,4 +1878,52 @@ async function verifyPayment(paymentResponse, courseId) {
 /**
  * --- ADMIN: BATCH MANAGEMENT LOGIC ---
  */
+
+
+
+/**
+ * --- ORDER SUMMARY / BILLING LOGIC ---
+ */
+function openOrderSummary() {
+    if (!activeCourseData) return;
+    
+    const modal = document.getElementById(\x27order-summary-modal\x27);
+    const originalPrice = Number(activeCourseData.price);
+    const discountedPrice = Number(activeCourseData.discountedPrice) || originalPrice;
+    const itemDiscount = originalPrice - (discountedPrice > 0 ? discountedPrice : originalPrice);
+    
+    // Fill Billing Details
+    document.getElementById(\x27summary-batch-title\x27).innerText = activeCourseData.title;
+    document.getElementById(\x27bill-original-price\x27).innerText = `?${originalPrice}`;
+    document.getElementById(\x27bill-item-discount\x27).innerText = `-?${itemDiscount}`;
+    
+    // Coupon Logic
+    let finalTotal = discountedPrice > 0 ? discountedPrice : originalPrice;
+    const couponRow = document.getElementById(\x27bill-coupon-row\x27);
+    const couponVal = document.getElementById(\x27bill-coupon-discount\x27);
+    
+    if (activeCoupon) {
+        const couponDiscountAmount = Math.round(finalTotal * (activeCoupon.discount / 100));
+        finalTotal -= couponDiscountAmount;
+        couponRow.classList.remove(\x27hidden\x27);
+        couponVal.innerText = `-?${couponDiscountAmount}`;
+    } else {
+        couponRow.classList.add(\x27hidden\x27);
+    }
+    
+    document.getElementById(\x27bill-final-total\x27).innerText = `?${finalTotal}`;
+    
+    // Set final button click
+    document.getElementById(\x27final-proceed-btn\x27).onclick = () => {
+        closeOrderSummary();
+        closeDetailsModal();
+        buyCourse(activeCourseData._id, activeCourseData.title);
+    };
+
+    modal.style.display = \x27flex\x27;
+}
+
+function closeOrderSummary() {
+    document.getElementById(\x27order-summary-modal\x27).style.display = \x27none\x27;
+}
 

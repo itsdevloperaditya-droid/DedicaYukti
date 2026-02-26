@@ -3717,3 +3717,109 @@ body.dark-mode .course-card-content {
     opacity: 1 !important;
 }
 
+
+/* --- PREMIUM ORDER SUMMARY / BILLING SECTION --- */
+.billing-card-wide {
+    max-width: 500px !important;
+    padding: 30px !important;
+}
+
+.billing-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.billing-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.batch-preview-mini {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: var(--bg-primary);
+    padding: 15px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-light);
+}
+
+#summary-batch-img {
+    width: 80px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.batch-mini-info h3 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.batch-validity {
+    font-size: 0.75rem;
+    color: var(--success);
+    font-weight: 700;
+}
+
+.price-breakdown-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.breakdown-row.discount {
+    color: #10b981;
+}
+
+.breakdown-row.total {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    padding-top: 5px;
+}
+
+.free-tag {
+    color: #10b981;
+    font-weight: 850;
+}
+
+.billing-divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 10px 0;
+}
+
+.billing-guarantee {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.billing-guarantee i {
+    color: var(--success);
+}
+

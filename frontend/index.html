@@ -552,7 +552,66 @@
         <a href="#" onclick="openAdminLogin()" style="color: #ccc; text-decoration: none; font-size:0.7rem;">Admin Login</a>
     </footer>
 
-    <!-- Full Screen Course Details Modal -->
+    <!-- Premium Order Summary Modal -->
+    <div id="order-summary-modal" class="modal modern-auth-overlay">
+        <div class="auth-container-glass billing-card-wide">
+            <button class="auth-close-btn" onclick="closeOrderSummary()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="billing-header">
+                <div class="billing-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <h2>Order Summary</h2>
+                <p>Review your batch details before payment</p>
+            </div>
+
+            <div class="billing-body">
+                <div class="batch-preview-mini">
+                    <img id="summary-batch-img" src="default-thumb.jpeg" alt="Batch">
+                    <div class="batch-mini-info">
+                        <h3 id="summary-batch-title">Batch Title</h3>
+                        <span class="batch-validity"><i class="far fa-calendar-check"></i> Lifetime Access</span>
+                    </div>
+                </div>
+
+                <div class="price-breakdown-box">
+                    <div class="breakdown-row">
+                        <span>Batch Price</span>
+                        <span id="bill-original-price">₹0</span>
+                    </div>
+                    <div class="breakdown-row discount">
+                        <span>Item Discount</span>
+                        <span id="bill-item-discount">-₹0</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>Delivery Charges</span>
+                        <span class="free-tag">FREE</span>
+                    </div>
+                    <div id="bill-coupon-row" class="breakdown-row discount hidden">
+                        <span>Coupon Discount</span>
+                        <span id="bill-coupon-discount">-₹0</span>
+                    </div>
+                    
+                    <div class="billing-divider"></div>
+                    
+                    <div class="breakdown-row total">
+                        <span>Total Amount</span>
+                        <span id="bill-final-total">₹0</span>
+                    </div>
+                </div>
+
+                <div class="billing-guarantee">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>100% Secure & Encrypted Payment</span>
+                </div>
+
+                <button id="final-proceed-btn" class="auth-submit-btn-modern">
+                    <span>PROCEED TO BUY</span>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
     <div id="course-details-modal" class="modal full-screen-modal">
         <div class="details-modal-content">
             <nav class="details-nav">
