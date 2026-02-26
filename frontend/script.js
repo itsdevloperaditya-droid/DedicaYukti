@@ -44,9 +44,13 @@ function initHeroAnimation() {
     if (!heroTitle || !heroPara) return;
 
     const phrases = [
-        "Welcome to DedicaYukti",
-        "Your learning partner",
-        "Affordable study"
+        "Welcome to DedicaYukti 🚀",
+    "India's Smart Learning Platform",
+    "For JEE • NEET • Competitive Aspirants",
+    "Learn Smart. Practice Daily. Crack Exams.",
+    "Affordable Courses. Real Results.",
+    "Doubt Solving • Mock Tests • Community Support",
+    "Your Success Journey Starts Here"
     ];
     
     let phraseIndex = 0;
