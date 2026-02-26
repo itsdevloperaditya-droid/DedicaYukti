@@ -1439,20 +1439,49 @@ function logout() {
 }
 
 function initModal() {
+    const authModal = document.getElementById('auth-modal');
+    const closeBtn = document.getElementById('close-modal');
     const tabLogin = document.getElementById('tab-login');
     const tabSignup = document.getElementById('tab-signup');
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
 
-    tabLogin.onclick = () => { tabLogin.classList.add('active'); tabSignup.classList.remove('active'); loginForm.classList.remove('hidden'); signupForm.classList.add('hidden'); };
-    tabSignup.onclick = () => { tabSignup.classList.add('active'); tabLogin.classList.remove('active'); signupForm.classList.remove('hidden'); loginForm.classList.add('hidden'); };
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            authModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        };
+    }
+
+    // Close on overlay click
+    window.onclick = (e) => {
+        if (e.target === authModal) {
+            authModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    };
+
+    if (tabLogin && tabSignup) {
+        tabLogin.onclick = () => { 
+            tabLogin.classList.add('active'); 
+            tabSignup.classList.remove('active'); 
+            loginForm.classList.remove('hidden'); 
+            signupForm.classList.add('hidden'); 
+        };
+        tabSignup.onclick = () => { 
+            tabSignup.classList.add('active'); 
+            tabLogin.classList.remove('active'); 
+            signupForm.classList.remove('hidden'); 
+            loginForm.classList.add('hidden'); 
+        };
+    }
 
     loginForm.onsubmit = async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         
-        const submitBtn = loginForm.querySelector('.auth-submit');
+        const submitBtn = loginForm.querySelector('.auth-submit-btn-modern');
         const originalText = submitBtn.innerText;
         submitBtn.innerText = 'Logging in...';
         submitBtn.disabled = true;

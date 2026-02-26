@@ -42,47 +42,79 @@
         </div>
     </nav>
 
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="modal">
-        <div class="modal-content">
-            <span id="close-modal" class="close">&times;</span>
-            <div class="auth-box">
-                <div class="auth-tabs">
-                    <button id="tab-login" class="tab-btn active">Login</button>
-                    <button id="tab-signup" class="tab-btn">Sign Up</button>
+    <!-- Modern Auth Overlay Section -->
+    <div id="auth-modal" class="modal modern-auth-overlay">
+        <div class="auth-container-glass">
+            <button class="auth-close-btn" id="close-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="auth-inner-box">
+                <div class="auth-header-visual">
+                    <div class="auth-logo-circle">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2>Welcome to DedicaYukti</h2>
+                    <p>Join our premium learning community</p>
+                </div>
+
+                <div class="auth-tabs-modern">
+                    <button id="tab-login" class="tab-btn-modern active">Login</button>
+                    <button id="tab-signup" class="tab-btn-modern">Register</button>
                 </div>
                 
-                <!-- Login Form -->
-                <form id="login-form" class="auth-form">
-                    <h2>Login</h2>
-                    <div class="input-group">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="login-email" placeholder="Email" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="login-password" placeholder="Password" required>
-                    </div>
-                    <button type="submit" class="auth-submit">Login</button>
-                </form>
+                <div class="auth-forms-wrapper">
+                    <!-- Login Form -->
+                    <form id="login-form" class="auth-form-modern">
+                        <div class="input-group-modern">
+                            <label>Email Address</label>
+                            <div class="input-field-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="login-email" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+                        <div class="input-group-modern">
+                            <label>Password</label>
+                            <div class="input-field-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="login-password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="auth-submit-btn-modern">
+                            <span>Sign In</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
 
-                <!-- Signup Form -->
-                <form id="signup-form" class="auth-form hidden">
-                    <h2>Sign Up</h2>
-                    <div class="input-group">
-                        <i class="fas fa-user input-icon"></i>
-                        <input type="text" id="signup-name" placeholder="Full Name" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="signup-email" placeholder="Email" required>
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="signup-password" placeholder="Password" required>
-                    </div>
-                    <button type="submit" class="auth-submit">Create Account</button>
-                </form>
+                    <!-- Signup Form -->
+                    <form id="signup-form" class="auth-form-modern hidden">
+                        <div class="input-group-modern">
+                            <label>Full Name</label>
+                            <div class="input-field-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="signup-name" placeholder="John Doe" required>
+                            </div>
+                        </div>
+                        <div class="input-group-modern">
+                            <label>Email Address</label>
+                            <div class="input-field-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="signup-email" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+                        <div class="input-group-modern">
+                            <label>Password</label>
+                            <div class="input-field-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="signup-password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="auth-submit-btn-modern">
+                            <span>Create Account</span>
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
