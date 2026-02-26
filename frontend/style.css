@@ -3397,3 +3397,17 @@ body.dark-mode .floating-bg-icons {
     position: relative;
     z-index: 1; /* Stay above icons */
 }
+
+/* More Random Positions for High Density */
+.bg-icon:nth-child(9) { top: 5%; left: 50%; animation-duration: 22s; animation-delay: -1s; }
+.bg-icon:nth-child(10) { top: 15%; left: 35%; animation-duration: 33s; animation-delay: -4s; }
+.bg-icon:nth-child(11) { top: 25%; left: 65%; animation-duration: 26s; animation-delay: -8s; }
+.bg-icon:nth-child(12) { top: 35%; left: 5%; animation-duration: 29s; animation-delay: -3s; }
+.bg-icon:nth-child(13) { top: 45%; left: 90%; animation-duration: 31s; animation-delay: -6s; }
+.bg-icon:nth-child(14) { top: 55%; left: 20%; animation-duration: 24s; animation-delay: -11s; }
+.bg-icon:nth-child(15) { top: 65%; left: 55%; animation-duration: 34s; animation-delay: -14s; }
+.bg-icon:nth-child(16) { top: 75%; left: 40%; animation-duration: 27s; animation-delay: -2s; }
+.bg-icon:nth-child(17) { top: 85%; left: 10%; animation-duration: 30s; animation-delay: -9s; }
+.bg-icon:nth-child(18) { top: 95%; left: 75%; animation-duration: 23s; animation-delay: -5s; }
+.bg-icon:nth-child(19) { top: 12%; left: 95%; animation-duration: 28s; animation-delay: -7s; }
+.bg-icon:nth-child(20) { top: 88%; left: 30%; animation-duration: 32s; animation-delay: -13s; }
