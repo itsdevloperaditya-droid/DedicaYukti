@@ -258,6 +258,7 @@ function resetPriceAndApplyCoupon(discountPercent) {
  */
 async function showCourseDetails(courseId, isResetPriceOnly = false) {
     if (!isResetPriceOnly) {
+        showGlobalLoader('Loading Batch Details...');
         activeCoupon = null;
         if (document.getElementById('coupon-input')) document.getElementById('coupon-input').value = '';
         if (document.getElementById('coupon-message')) document.getElementById('coupon-message').innerText = '';
@@ -348,9 +349,11 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
 
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
+            hideGlobalLoader();
         }
     } catch (err) {
         showToast('Error loading details', 'error');
+        hideGlobalLoader();
     }
 }
 
@@ -688,6 +691,7 @@ function adminLogout() {
 
 // Load Admin Dashboard
 async function loadAdminDashboard(retryCount = 0) {
+    showGlobalLoader('Opening Admin Dashboard...');
     const list = document.getElementById('admin-course-list');
     list.innerHTML = '<div class="loader">Loading Dashboard...</div>';
     
@@ -722,8 +726,10 @@ async function loadAdminDashboard(retryCount = 0) {
             `;
             list.appendChild(item);
         });
+        hideGlobalLoader();
     } catch (err) {
         console.error(err);
+        hideGlobalLoader();
     }
 }
 
@@ -1237,6 +1243,7 @@ async function fetchCourses() {
 
 async function showCourseContent(courseId) {
     if (!currentUser) return showToast('Login first', 'error');
+    showGlobalLoader('Opening Course Dashboard...');
     try {
         const res = await fetch(`${API_URL}/course-details?courseId=${courseId}&userId=${currentUser.userId}`);
         const course = await res.json();
@@ -1279,7 +1286,10 @@ async function showCourseContent(courseId) {
         if (bottomNav) bottomNav.classList.add('hidden');
 
         switchStudentSubject('physics');
-    } catch(err) {}
+        hideGlobalLoader();
+    } catch(err) {
+        hideGlobalLoader();
+    }
 }
 
 function switchStudentSubject(subject) {
@@ -1514,6 +1524,7 @@ function initModal() {
 
     loginForm.onsubmit = async (e) => {
         e.preventDefault();
+        showGlobalLoader('Verifying Credentials...');
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         
@@ -1549,11 +1560,13 @@ function initModal() {
         } finally {
             submitBtn.innerText = originalText;
             submitBtn.disabled = false;
+            hideGlobalLoader();
         }
     };
 
     signupForm.onsubmit = async (e) => {
         e.preventDefault();
+        showGlobalLoader('Creating Your Account...');
         const name = document.getElementById('signup-name').value;
         const email = document.getElementById('signup-email').value;
         const password = document.getElementById('signup-password').value;
@@ -1566,7 +1579,10 @@ function initModal() {
             const data = await res.json();
             if (data.userId) { showToast('Registered! Please login.', 'success'); tabLogin.click(); }
             else showToast(data.error, 'error');
-        } catch (err) {}
+            hideGlobalLoader();
+        } catch (err) {
+            hideGlobalLoader();
+        }
     };
 }
 
@@ -1806,6 +1822,7 @@ async function buyCourse(courseId, courseTitle) {
     if (!currentUser) return (showToast('Login to buy', 'error'), openModal());
     closeDetailsModal(); // Close details view if open
     
+    showGlobalLoader('Initializing Secure Payment...');
     const couponCode = activeCoupon ? activeCoupon.code : null;
 
     try {
@@ -1859,9 +1876,11 @@ async function buyCourse(courseId, courseTitle) {
         rzp.on('payment.failed', function (response){
             showToast('Payment failed: ' + response.error.description, 'error');
         });
+        hideGlobalLoader();
         rzp.open();
     } catch (err) {
         showToast('Error creating order', 'error');
+        hideGlobalLoader();
     }
 }
 
@@ -1940,5 +1959,27 @@ function openOrderSummary() {
 function closeOrderSummary() {
     const modal = document.getElementById('order-summary-modal');
     if (modal) modal.style.display = 'none';
+}
+
+
+
+/**
+ * --- GLOBAL LOADER HELPERS ---
+ */
+function showGlobalLoader(text = 'Processing Request...') {
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+        loader.querySelector('p').innerText = text;
+        loader.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function hideGlobalLoader() {
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+        loader.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 }
 
