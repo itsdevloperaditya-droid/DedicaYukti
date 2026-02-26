@@ -1,5 +1,5 @@
-// Production API URL for Render
-const API_URL = 'https://dedicayuktiacademy.onrender.com/api';
+// Use relative path for same-domain hosting (Render Monolith)
+const API_URL = '/api';
 const RAZORPAY_KEY_ID = 'rzp_live_SJWx8xpXBRPVsI';
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
@@ -1163,25 +1163,31 @@ async function fetchCourses() {
     if (!container) return;
     
     try {
-        console.log("Fetching courses...");
+        // Ensure API_URL doesn't end with a slash for clean concatenation
+        const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+        console.log(`📡 Attempting to fetch courses from: ${baseUrl}/courses`);
+        
         let purchasedCourseIds = [];
         if (currentUser && currentUser.userId) {
             try {
-                const userRes = await fetch(`${API_URL}/my-batches?userId=${currentUser.userId}`);
+                const userRes = await fetch(`${baseUrl}/my-batches?userId=${currentUser.userId}`);
                 if (userRes.ok) {
                     const batches = await userRes.json();
                     purchasedCourseIds = batches.map(b => b._id.toString());
                 }
             } catch(e) {
-                console.error("Batch fetch error:", e);
+                console.warn("⚠️ Batch fetch failed (non-critical):", e);
             }
         }
 
-        const response = await fetch(`${API_URL}/courses`);
-        if (!response.ok) throw new Error("Failed to fetch courses");
+        const response = await fetch(`${baseUrl}/courses`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server returned ${response.status}: ${errorText || 'Unknown error'}`);
+        }
         
         const courses = await response.json();
-        console.log("Courses loaded:", courses.length);
+        console.log("✅ Courses loaded successfully:", courses.length);
         
         container.innerHTML = '';
         if (!courses || courses.length === 0) {
@@ -1190,12 +1196,11 @@ async function fetchCourses() {
         }
 
         courses.forEach(course => {
-            const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
+            const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
             const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
             const isPurchased = purchasedCourseIds.includes(course._id.toString());
             const hasAccess = isDeveloper || isPurchased;
             
-            // Calculate if discount exists
             const originalPrice = Number(course.price) || 0;
             const discountedPrice = Number(course.discountedPrice) || 0;
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
@@ -1235,8 +1240,8 @@ async function fetchCourses() {
             container.appendChild(card);
         });
     } catch (error) {
-        console.error("Full fetchCourses error:", error);
-        container.innerHTML = '<p class="loader" style="color: var(--danger);">Error loading courses. Please refresh the page.</p>';
+        console.error("❌ Fatal fetchCourses error:", error);
+        container.innerHTML = `<p class="loader" style="color: var(--danger);">Unable to load courses.<br><small>${error.message}</small></p>`;
     }
 }
 
