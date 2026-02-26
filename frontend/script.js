@@ -1887,43 +1887,44 @@ async function verifyPayment(paymentResponse, courseId) {
 function openOrderSummary() {
     if (!activeCourseData) return;
     
-    const modal = document.getElementById(\x27order-summary-modal\x27);
+    const modal = document.getElementById('order-summary-modal');
     const originalPrice = Number(activeCourseData.price);
     const discountedPrice = Number(activeCourseData.discountedPrice) || originalPrice;
     const itemDiscount = originalPrice - (discountedPrice > 0 ? discountedPrice : originalPrice);
     
     // Fill Billing Details
-    document.getElementById(\x27summary-batch-title\x27).innerText = activeCourseData.title;
-    document.getElementById(\x27bill-original-price\x27).innerText = `?${originalPrice}`;
-    document.getElementById(\x27bill-item-discount\x27).innerText = `-?${itemDiscount}`;
+    document.getElementById('summary-batch-title').innerText = activeCourseData.title;
+    document.getElementById('bill-original-price').innerText = `₹${originalPrice}`;
+    document.getElementById('bill-item-discount').innerText = `-₹${itemDiscount}`;
     
     // Coupon Logic
     let finalTotal = discountedPrice > 0 ? discountedPrice : originalPrice;
-    const couponRow = document.getElementById(\x27bill-coupon-row\x27);
-    const couponVal = document.getElementById(\x27bill-coupon-discount\x27);
+    const couponRow = document.getElementById('bill-coupon-row');
+    const couponVal = document.getElementById('bill-coupon-discount');
     
     if (activeCoupon) {
         const couponDiscountAmount = Math.round(finalTotal * (activeCoupon.discount / 100));
         finalTotal -= couponDiscountAmount;
-        couponRow.classList.remove(\x27hidden\x27);
-        couponVal.innerText = `-?${couponDiscountAmount}`;
+        couponRow.classList.remove('hidden');
+        couponVal.innerText = `-₹${couponDiscountAmount}`;
     } else {
-        couponRow.classList.add(\x27hidden\x27);
+        couponRow.classList.add('hidden');
     }
     
-    document.getElementById(\x27bill-final-total\x27).innerText = `?${finalTotal}`;
+    document.getElementById('bill-final-total').innerText = `₹${finalTotal}`;
     
     // Set final button click
-    document.getElementById(\x27final-proceed-btn\x27).onclick = () => {
+    document.getElementById('final-proceed-btn').onclick = () => {
         closeOrderSummary();
         closeDetailsModal();
         buyCourse(activeCourseData._id, activeCourseData.title);
     };
 
-    modal.style.display = \x27flex\x27;
+    modal.style.display = 'flex';
 }
 
 function closeOrderSummary() {
-    document.getElementById(\x27order-summary-modal\x27).style.display = \x27none\x27;
+    const modal = document.getElementById('order-summary-modal');
+    if (modal) modal.style.display = 'none';
 }
 
