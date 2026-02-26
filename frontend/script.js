@@ -1,5 +1,5 @@
-// Use relative path for same-domain hosting (Render Monolith)
-const API_URL = '/api';
+// Pointing to the dedicated backend service
+const API_URL = 'https://dedicayukti-be.onrender.com/api';
 const RAZORPAY_KEY_ID = 'rzp_live_SJWx8xpXBRPVsI';
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
