@@ -3352,8 +3352,9 @@ body.dark-mode .google-btn:hover {
 
 /* Premium Buttons */
 .auth-submit-btn-modern {
+    width: 100%; /* Back to full width */
     margin-top: 15px;
-    height: 58px; /* Slightly taller for premium feel */
+    height: 58px;
     background: var(--primary-gradient);
     color: white;
     border: none;
