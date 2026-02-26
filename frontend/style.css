@@ -3607,3 +3607,67 @@ body.dark-mode .course-card {
     filter: brightness(1.1);
 }
 
+
+/* --- ULTRA MODERN COURSE CARDS (Refined with Thumbnails) --- */
+.course-thumb-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    transition: transform 0.5s ease;
+}
+
+.course-card:hover .course-thumb-img {
+    transform: scale(1.1);
+}
+
+.banner-overlay-soft {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+    z-index: 1;
+}
+
+.course-card-banner {
+    position: relative;
+    height: 160px; /* Taller banner for thumbnails */
+    overflow: hidden;
+}
+
+.course-category {
+    position: relative;
+    z-index: 2;
+}
+
+.discount-row-modern {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.discount-tag-modern {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+/* Ensure no overlap */
+.course-card-content {
+    background: var(--bg-secondary);
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--border-light);
+}
+
+body.dark-mode .course-card-content {
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(10px);
+}
+

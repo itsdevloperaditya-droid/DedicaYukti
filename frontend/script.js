@@ -1158,10 +1158,30 @@ async function fetchCourses() {
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
             const displayPrice = hasDiscount ? discountedPrice : originalPrice;
             
+        courses.forEach(course => {
+            const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
+            const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
+            const isPurchased = purchasedCourseIds.includes(course._id.toString());
+            const hasAccess = isDeveloper || isPurchased;
+            
+            // Calculate if discount exists
+            const originalPrice = Number(course.price) || 0;
+            const discountedPrice = Number(course.discountedPrice) || 0;
+            const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
+            const displayPrice = hasDiscount ? discountedPrice : originalPrice;
+            
             let discountPercent = 0;
-            if (hasDiscount) {
+            if (hasDiscount && originalPrice > 0) {
                 discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             }
+
+            // Category-based Thumbnails
+            const cat = (course.category || 'general').toLowerCase();
+            let thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
+            if (cat.includes('jee') || cat.includes('math')) thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
+            if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+            if (cat.includes('physic')) thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
+            if (cat.includes('chemis')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
 
             const card = document.createElement('div');
             card.className = 'course-card';
@@ -1172,6 +1192,8 @@ async function fetchCourses() {
                     <i class="fas fa-info"></i>
                 </div>
                 <div class="course-card-banner">
+                    <img src="${thumbUrl}" alt="${course.title}" class="course-thumb-img">
+                    <div class="banner-overlay-soft"></div>
                     <span class="course-category">${course.category || 'General'}</span>
                 </div>
                 <div class="course-card-content">
@@ -1186,7 +1208,12 @@ async function fetchCourses() {
 
                     <div class="course-footer-modern">
                         <div class="price-section-modern">
-                            ${hasDiscount ? `<span class="original-price-modern">₹${originalPrice}</span>` : ''}
+                            ${hasDiscount ? `
+                                <div class="discount-row-modern" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
+                                    <span class="original-price-modern">₹${originalPrice}</span>
+                                    <span class="discount-tag-modern" style="color: #10b981; font-weight: 800; font-size: 0.75rem;">-${discountPercent}%</span>
+                                </div>
+                            ` : ''}
                             <span class="final-price-modern">₹${displayPrice}</span>
                         </div>
                         ${hasAccess ? 
