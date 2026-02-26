@@ -1822,3 +1822,68 @@ async function verifyPayment(paymentResponse, courseId) {
         }, 1500); // Small delay to let the celebration show
     } catch (err) {}
 }
+
+
+/**
+ * --- GOOGLE LOGIN LOGIC ---
+ */
+const GOOGLE_CLIENT_ID = \x27537837416637-cgfl4j0k14hijtns9qcltllq41ehmv82.apps.googleusercontent.com\x27;
+
+function initGoogleLogin() {
+    if (typeof google === \x27undefined\x27) {
+        setTimeout(initGoogleLogin, 500);
+        return;
+    }
+
+    google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse
+    });
+
+    const container = document.getElementById(\x27google-login-container\x27);
+    if (container) {
+        google.accounts.id.renderButton(container, {
+            theme: document.body.classList.contains(\x27dark-mode\x27) ? \x27filled_black\x27 : \x27outline\x27,
+            size: \x27large\x27,
+            text: \x27continue_with\x27,
+            shape: \x27pill\x27,
+            width: 300
+        });
+    }
+}
+
+async function handleGoogleResponse(response) {
+    const idToken = response.credential;
+    
+    try {
+        const res = await fetch(`${API_URL}/auth/google`, {
+            method: \x27POST\x27,
+            headers: { \x27Content-Type\x27: \x27application/json\x27 },
+            body: JSON.stringify({ token: idToken })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.userId) {
+            currentUser = { userId: data.userId, email: data.email };
+            localStorage.setItem(\x27user\x27, JSON.stringify(currentUser));
+            
+            triggerCelebration();
+            showToast(\x27Google Login Successful!\x27, \x27success\x27);
+
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showToast(data.error || \x27Google Login failed\x27, \x27error\x27);
+        }
+    } catch (err) {
+        console.error(\x27Google Auth Error:\x27, err);
+        showToast(\x27Server error during Google Login\x27, \x27error\x27);
+    }
+}
+
+// Ensure Google Login is initialized after DOM load
+document.addEventListener(\x27DOMContentLoaded\x27, () => {
+    initGoogleLogin();
+});
+

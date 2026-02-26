@@ -42,9 +42,55 @@ const transporter = nodemailer.createTransport({
  * API ROUTES
  */
 
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client('537837416637-cgfl4j0k14hijtns9qcltllq41ehmv82.apps.googleusercontent.com');
+
 // Root Route
 app.get('/', (req, res) => {
     res.send('Backend is running successfully 🚀');
+});
+
+// Google Login Route
+app.post('/api/auth/google', async (req, res) => {
+    const { token } = req.body;
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: '537837416637-cgfl4j0k14hijtns9qcltllq41ehmv82.apps.googleusercontent.com'
+        });
+        const payload = ticket.getPayload();
+        const { email, name, picture, sub: googleId } = payload;
+
+        const db = getDb();
+        const usersCollection = db.collection('users');
+
+        // Check if user exists
+        let user = await usersCollection.findOne({ email });
+
+        if (!user) {
+            // Register new user from Google info
+            const newUser = {
+                email,
+                name,
+                photoUrl: picture,
+                googleId,
+                createdAt: new Date(),
+                purchasedCourses: []
+            };
+            const result = await usersCollection.insertOne(newUser);
+            user = { ...newUser, _id: result.insertedId };
+        }
+
+        res.json({ 
+            success: true, 
+            userId: user._id, 
+            email: user.email, 
+            name: user.name 
+        });
+    } catch (error) {
+        console.error('Google Verification Error:', error);
+        res.status(401).json({ error: 'Invalid Google Token' });
+    }
 });
 
 // Test Route
