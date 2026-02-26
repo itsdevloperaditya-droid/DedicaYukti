@@ -1827,10 +1827,10 @@ async function verifyPayment(paymentResponse, courseId) {
 /**
  * --- GOOGLE LOGIN LOGIC ---
  */
-const GOOGLE_CLIENT_ID = \x27537837416637-cgfl4j0k14hijtns9qcltllq41ehmv82.apps.googleusercontent.com\x27;
+const GOOGLE_CLIENT_ID = '537837416637-cgfl4j0k14hijtns9qcltllq41ehmv82.apps.googleusercontent.com';
 
 function initGoogleLogin() {
-    if (typeof google === \x27undefined\x27) {
+    if (typeof google === 'undefined') {
         setTimeout(initGoogleLogin, 500);
         return;
     }
@@ -1840,13 +1840,13 @@ function initGoogleLogin() {
         callback: handleGoogleResponse
     });
 
-    const container = document.getElementById(\x27google-login-container\x27);
+    const container = document.getElementById('google-login-container');
     if (container) {
         google.accounts.id.renderButton(container, {
-            theme: document.body.classList.contains(\x27dark-mode\x27) ? \x27filled_black\x27 : \x27outline\x27,
-            size: \x27large\x27,
-            text: \x27continue_with\x27,
-            shape: \x27pill\x27,
+            theme: document.body.classList.contains('dark-mode') ? 'filled_black' : 'outline',
+            size: 'large',
+            text: 'continue_with',
+            shape: 'pill',
             width: 300
         });
     }
@@ -1857,33 +1857,33 @@ async function handleGoogleResponse(response) {
     
     try {
         const res = await fetch(`${API_URL}/auth/google`, {
-            method: \x27POST\x27,
-            headers: { \x27Content-Type\x27: \x27application/json\x27 },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: idToken })
         });
 
         const data = await res.json();
         if (res.ok && data.userId) {
             currentUser = { userId: data.userId, email: data.email };
-            localStorage.setItem(\x27user\x27, JSON.stringify(currentUser));
+            localStorage.setItem('user', JSON.stringify(currentUser));
             
             triggerCelebration();
-            showToast(\x27Google Login Successful!\x27, \x27success\x27);
+            showToast('Google Login Successful!', 'success');
 
             setTimeout(() => {
                 location.reload();
             }, 1500);
         } else {
-            showToast(data.error || \x27Google Login failed\x27, \x27error\x27);
+            showToast(data.error || 'Google Login failed', 'error');
         }
     } catch (err) {
-        console.error(\x27Google Auth Error:\x27, err);
-        showToast(\x27Server error during Google Login\x27, \x27error\x27);
+        console.error('Google Auth Error:', err);
+        showToast('Server error during Google Login', 'error');
     }
 }
 
 // Ensure Google Login is initialized after DOM load
-document.addEventListener(\x27DOMContentLoaded\x27, () => {
+document.addEventListener('DOMContentLoaded', () => {
     initGoogleLogin();
 });
 
