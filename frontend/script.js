@@ -1,5 +1,5 @@
-// Pointing to the dedicated backend service
-const API_URL = 'https://dedicayukti-be.onrender.com/api';
+// Production API URL for Render
+const API_URL = 'https://dedicayukti.onrender.com/api';
 const RAZORPAY_KEY_ID = 'rzp_live_SJWx8xpXBRPVsI';
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
@@ -45,12 +45,8 @@ function initHeroAnimation() {
 
     const phrases = [
         "Welcome to DedicaYukti",
-    "Learn Smarter",
-    "Crack JEE & NEET",
-    "Daily Practice",
-    "Mock Tests",
-    "Clear Doubts",
-    "Achieve More"
+        "Your learning partner",
+        "Affordable study"
     ];
     
     let phraseIndex = 0;
@@ -192,13 +188,6 @@ async function deleteCoupon(id) {
 }
 
 async function applyCoupon() {
-    const wrapper = document.getElementById('coupon-field-wrapper');
-    if (wrapper && wrapper.style.display === 'none') {
-        wrapper.style.display = 'block';
-        document.getElementById('coupon-input').focus();
-        return;
-    }
-
     const code = document.getElementById('coupon-input').value.trim();
     const msgEl = document.getElementById('coupon-message');
     
@@ -213,10 +202,16 @@ async function applyCoupon() {
         const data = await res.json();
 
         if (res.ok) {
+            // First, reset UI to base price before applying any coupon (fix for multiple clicks)
+            const currentCourseId = document.getElementById('details-course-id')?.value || activeCourseData?._id;
+            if (currentCourseId) {
+                // We use a small internal function or just re-fetch the base price
+                // But a simpler way is to store the base price when opening the modal
+            }
+            
             activeCoupon = { code, discount: data.discountPercentage };
             msgEl.innerText = `✅ Coupon Applied! ${data.discountPercentage}% Discount Added.`;
             msgEl.className = 'coupon-msg success';
-            msgEl.style.color = '#10b981';
             
             // Trigger Confetti Celebration!
             triggerCelebration();
@@ -227,9 +222,8 @@ async function applyCoupon() {
             activeCoupon = null;
             msgEl.innerText = `❌ ${data.error || 'Invalid Coupon'}`;
             msgEl.className = 'coupon-msg error';
-            msgEl.style.color = '#ef4444';
             // Reset price to original
-            showCourseDetails(activeCourseData?._id || '', true);
+            showCourseDetails(document.getElementById('edit-course-id').value, true);
         }
     } catch (err) {
         showToast('Error validating coupon', 'error');
@@ -239,37 +233,22 @@ async function applyCoupon() {
 function resetPriceAndApplyCoupon(discountPercent) {
     if (!activeCourseData) return;
     
+    const priceEl = document.getElementById('details-current-price');
     const originalPrice = Number(activeCourseData.price);
     const discountedPrice = Number(activeCourseData.discountedPrice);
     
     // Determine the base price (either original or already discounted price from dashboard)
     let basePrice = (discountedPrice > 0 && discountedPrice < originalPrice) ? discountedPrice : originalPrice;
     
-    // Always apply the coupon discount to the BASE price
-    let couponDiscountValue = Math.round(basePrice * (discountPercent / 100));
-    let finalTotal = basePrice - couponDiscountValue;
+    // Always apply the coupon discount to the BASE price, not the current UI price
+    let newVal = Math.round(basePrice * (1 - (discountPercent / 100)));
     
-    // Update Summary UI
-    const couponRow = document.getElementById('coupon-discount-row');
-    const couponValEl = document.getElementById('summary-coupon-discount');
-    const finalTotalEl = document.getElementById('summary-final-total');
-    const bottomFinalPriceEl = document.getElementById('bottom-final-price');
-
-    if (couponRow) couponRow.style.display = 'flex';
-    if (couponValEl) couponValEl.innerText = `-₹${couponDiscountValue}`;
-    if (finalTotalEl) finalTotalEl.innerText = `₹${finalTotal}`;
-    if (bottomFinalPriceEl) {
-        bottomFinalPriceEl.innerText = `₹${finalTotal}`;
-        bottomFinalPriceEl.style.transform = 'scale(1.1)';
-        setTimeout(() => { bottomFinalPriceEl.style.transform = 'scale(1)'; }, 200);
-    }
-
-    // Also update the main price display in header
-    const priceEl = document.getElementById('details-current-price');
-    if (priceEl) {
-        priceEl.innerText = `₹${finalTotal}`;
-        priceEl.classList.add('is-discounted');
-    }
+    priceEl.innerText = `₹${newVal}`;
+    priceEl.classList.add('is-discounted');
+    
+    // Optional: add animation to show price change
+    priceEl.style.transform = 'scale(1.1)';
+    setTimeout(() => { priceEl.style.transform = 'scale(1)'; }, 200);
 }
 
 /**
@@ -280,8 +259,6 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
         activeCoupon = null;
         if (document.getElementById('coupon-input')) document.getElementById('coupon-input').value = '';
         if (document.getElementById('coupon-message')) document.getElementById('coupon-message').innerText = '';
-        if (document.getElementById('coupon-field-wrapper')) document.getElementById('coupon-field-wrapper').style.display = 'none';
-        if (document.getElementById('coupon-discount-row')) document.getElementById('coupon-discount-row').style.display = 'none';
     }
     
     const modal = document.getElementById('course-details-modal');
@@ -296,70 +273,61 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
             // Save current course data for price reset logic
             activeCourseData = course;
             
-            // Fill basic details
-            if (document.getElementById('details-title')) document.getElementById('details-title').innerText = course.title;
-            if (document.getElementById('details-description')) document.getElementById('details-description').innerText = course.description;
+            // Fill details
+            document.getElementById('details-category').innerText = course.category || 'General';
+            document.getElementById('details-title').innerText = course.title;
+            document.getElementById('details-description').innerText = course.description;
             
             // Features
             const featuresList = document.getElementById('details-features-list');
-            if (featuresList) {
-                featuresList.innerHTML = (course.features && course.features.length > 0) 
-                    ? course.features.slice(0, 4).map(f => `<li><i class="fas fa-check-circle" style="color:var(--success);"></i> ${f}</li>`).join('')
-                    : `
-                        <li><i class="fas fa-check-circle" style="color:var(--success);"></i> Full Syllabus Coverage</li>
-                        <li><i class="fas fa-check-circle" style="color:var(--success);"></i> Expert Video Lectures</li>
-                    `;
+            featuresList.innerHTML = (course.features && course.features.length > 0) 
+                ? course.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')
+                : `
+                    <li><i class="fas fa-check-circle"></i> Full Syllabus Coverage</li>
+                    <li><i class="fas fa-check-circle"></i> Live Interactive Classes</li>
+                    <li><i class="fas fa-check-circle"></i> Expert Doubt Sessions</li>
+                    <li><i class="fas fa-check-circle"></i> PDF Study Materials</li>
+                `;
+
+            // Faculty
+            document.getElementById('details-faculty-name').innerText = course.faculty?.name || 'Expert Faculty';
+            document.getElementById('details-faculty-bio').innerText = course.faculty?.bio || 'Experienced educator for Science & Competitive exams.';
+            if (course.faculty?.photo) {
+                document.getElementById('details-faculty-img').src = course.faculty.photo;
+            } else {
+                document.getElementById('details-faculty-img').src = 'https://via.placeholder.com/80';
             }
 
-            // Price & Summary Calculations
+            // Price
             const originalPrice = Number(course.price);
             const discountedPrice = Number(course.discountedPrice);
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
             const displayPrice = hasDiscount ? discountedPrice : originalPrice;
-            const itemDiscount = hasDiscount ? (originalPrice - discountedPrice) : 0;
-            const discountPercent = Math.round((itemDiscount / originalPrice) * 100);
-
-            // Update Header Price
-            const currentPriceEl = document.getElementById('details-current-price');
-            const originalPriceEl = document.getElementById('details-original-price');
-            if (currentPriceEl) currentPriceEl.innerText = `₹${displayPrice}`;
-            if (originalPriceEl) {
-                originalPriceEl.innerText = `₹${originalPrice}`;
-                originalPriceEl.style.display = hasDiscount ? 'inline' : 'none';
-            }
-
-            // Update Payment Summary
-            if (document.getElementById('summary-price')) document.getElementById('summary-price').innerText = `₹${originalPrice}`;
-            if (document.getElementById('summary-item-discount')) document.getElementById('summary-item-discount').innerText = `-₹${itemDiscount}`;
-            if (document.getElementById('summary-final-total')) document.getElementById('summary-final-total').innerText = `₹${displayPrice}`;
-
-            // Update Bottom Bar
-            const bottomFinalPriceEl = document.getElementById('bottom-final-price');
-            const bottomOriginalPriceEl = document.getElementById('bottom-original-price');
-            const bottomDiscountBadge = document.getElementById('details-discount-tag');
-
-            if (bottomFinalPriceEl) bottomFinalPriceEl.innerText = `₹${displayPrice}`;
-            if (bottomOriginalPriceEl) {
-                bottomOriginalPriceEl.innerText = `₹${originalPrice}`;
-                bottomOriginalPriceEl.style.display = hasDiscount ? 'inline' : 'none';
-            }
-            if (bottomDiscountBadge) {
-                bottomDiscountBadge.innerText = `${discountPercent}% OFF`;
-                bottomDiscountBadge.style.display = hasDiscount ? 'inline-block' : 'none';
+            
+            document.getElementById('details-current-price').innerText = `₹${displayPrice}`;
+            if (hasDiscount) {
+                document.getElementById('details-original-price').innerText = `₹${originalPrice}`;
+                document.getElementById('details-original-price').style.display = 'inline';
+                const percent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
+                document.getElementById('details-discount-tag').innerText = `${percent}% OFF`;
+                document.getElementById('details-discount-tag').style.display = 'inline-block';
+            } else {
+                document.getElementById('details-original-price').style.display = 'none';
+                document.getElementById('details-discount-tag').style.display = 'none';
             }
 
             // Action Button (Enroll vs View)
             const actionContainer = document.getElementById('details-action-container');
             if (course.hasPurchased) {
                 actionContainer.innerHTML = `
-                    <button class="proceed-buy-btn" onclick="closeDetailsModal(); showCourseContent('${course._id}')">
-                        <i class="fas fa-play-circle" style="margin-right:8px;"></i> VIEW BATCH
+                    <button class="dashboard-btn-large" onclick="closeDetailsModal(); showCourseContent('${course._id}')">
+                        <i class="fas fa-play-circle"></i> View Batch Content
                     </button>
                 `;
             } else {
                 actionContainer.innerHTML = `
-                    <button class="proceed-buy-btn" onclick="buyCourse('${course._id}', '${course.title}')">
-                        PROCEED TO BUY
+                    <button class="enroll-btn-large" onclick="buyCourse('${course._id}', '${course.title}')">
+                        <i class="fas fa-shopping-cart"></i> Enroll in Batch Now
                     </button>
                 `;
             }
@@ -374,7 +342,6 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
             document.body.style.overflow = 'hidden';
         }
     } catch (err) {
-        console.error('Error loading details:', err);
         showToast('Error loading details', 'error');
     }
 }
@@ -1160,60 +1127,43 @@ const icons = {
  */
 async function fetchCourses() {
     const container = document.getElementById('course-container');
-    if (!container) return;
-    
     try {
-        // Ensure API_URL doesn't end with a slash for clean concatenation
-        const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
-        console.log(`📡 Attempting to fetch courses from: ${baseUrl}/courses`);
-        
         let purchasedCourseIds = [];
-        if (currentUser && currentUser.userId) {
+        if (currentUser) {
             try {
-                const userRes = await fetch(`${baseUrl}/my-batches?userId=${currentUser.userId}`);
-                if (userRes.ok) {
-                    const batches = await userRes.json();
-                    purchasedCourseIds = batches.map(b => b._id.toString());
-                }
-            } catch(e) {
-                console.warn("⚠️ Batch fetch failed (non-critical):", e);
-            }
+                const userRes = await fetch(`${API_URL}/my-batches?userId=${currentUser.userId}`);
+                const batches = await userRes.json();
+                purchasedCourseIds = batches.map(b => b._id.toString());
+            } catch(e) {}
         }
 
-        const response = await fetch(`${baseUrl}/courses`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Server returned ${response.status}: ${errorText || 'Unknown error'}`);
-        }
-        
+        const response = await fetch(`${API_URL}/courses`);
         const courses = await response.json();
-        console.log("✅ Courses loaded successfully:", courses.length);
-        
         container.innerHTML = '';
         if (!courses || courses.length === 0) {
-            container.innerHTML = '<p class="loader">No courses available at this time.</p>';
+            container.innerHTML = '<p class="loader">No courses available.</p>';
             return;
         }
-
         courses.forEach(course => {
-            const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
+            const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
             const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
             const isPurchased = purchasedCourseIds.includes(course._id.toString());
             const hasAccess = isDeveloper || isPurchased;
             
-            const originalPrice = Number(course.price) || 0;
-            const discountedPrice = Number(course.discountedPrice) || 0;
+            // Calculate if discount exists
+            const originalPrice = Number(course.price);
+            const discountedPrice = Number(course.discountedPrice);
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
             const displayPrice = hasDiscount ? discountedPrice : originalPrice;
             
             let discountPercent = 0;
-            if (hasDiscount && originalPrice > 0) {
+            if (hasDiscount) {
                 discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             }
 
             const card = document.createElement('div');
             card.className = 'course-card';
-            card.onclick = () => showCourseDetails(course._id);
+            card.onclick = () => showCourseDetails(course._id); // Open details on click
             
             card.innerHTML = `
                 <span class="course-category">${course.category || 'General'}</span>
@@ -1240,8 +1190,7 @@ async function fetchCourses() {
             container.appendChild(card);
         });
     } catch (error) {
-        console.error("❌ Fatal fetchCourses error:", error);
-        container.innerHTML = `<p class="loader" style="color: var(--danger);">Unable to load courses.<br><small>${error.message}</small></p>`;
+        container.innerHTML = '<p class="loader" style="color: var(--danger);">Error loading courses.</p>';
     }
 }
 
