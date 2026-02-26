@@ -1146,18 +1146,7 @@ async function fetchCourses() {
             container.innerHTML = '<p class="loader">No courses available.</p>';
             return;
         }
-        courses.forEach(course => {
-            const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
-            const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
-            const isPurchased = purchasedCourseIds.includes(course._id.toString());
-            const hasAccess = isDeveloper || isPurchased;
-            
-            // Calculate if discount exists
-            const originalPrice = Number(course.price);
-            const discountedPrice = Number(course.discountedPrice);
-            const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
-            const displayPrice = hasDiscount ? discountedPrice : originalPrice;
-            
+        
         courses.forEach(course => {
             const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
             const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
