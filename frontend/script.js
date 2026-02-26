@@ -1183,9 +1183,6 @@ async function fetchCourses() {
             card.onclick = () => showCourseDetails(course._id);
             
             card.innerHTML = `
-                <div class="card-info-btn" title="View Details">
-                    <i class="fas fa-info"></i>
-                </div>
                 <div class="course-card-banner">
                     <img src="${thumbUrl}" alt="${course.title}" class="course-thumb-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';">
                     <div class="banner-overlay-soft"></div>
@@ -1202,7 +1199,7 @@ async function fetchCourses() {
                     </div>
 
                     <div class="course-footer-modern">
-                        <div class="price-section-modern" style="padding-left: 35px;">
+                        <div class="price-section-modern">
                             ${hasDiscount ? `
                                 <div class="discount-row-modern" style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                                     <span class="original-price-modern" style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">₹${originalPrice}</span>
