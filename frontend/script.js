@@ -1229,12 +1229,12 @@ async function fetchCourses() {
                     <div class="course-footer-modern">
                         <div class="price-section-modern">
                             ${hasDiscount ? `
-                                <div class="discount-row-modern" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
-                                    <span class="original-price-modern">₹${originalPrice}</span>
-                                    <span class="discount-tag-modern" style="color: #10b981; font-weight: 800; font-size: 0.75rem;">-${discountPercent}%</span>
+                                <div class="discount-row-modern" style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    <span class="original-price-modern" style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">₹${originalPrice}</span>
+                                    <span class="discount-tag-modern">-${discountPercent}%</span>
                                 </div>
                             ` : ''}
-                            <span class="final-price-modern">₹${displayPrice}</span>
+                            <span class="final-price-modern" style="font-size: 1.5rem; font-weight: 900; color: #3b82f6;">₹${displayPrice}</span>
                         </div>
                         ${hasAccess ? 
                             `<button class="modern-buy-btn access" onclick="event.stopPropagation(); showCourseContent('${course._id}')">Access Now</button>` : 
