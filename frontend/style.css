@@ -1457,10 +1457,11 @@ body.dark-mode .empty-batches-state {
 /* Typing Cursor Effect */
 .hero h1::after {
     content: '|';
-    margin-left: 5px;
+    margin-left: 2px;
     color: var(--accent);
-    animation: blink 1s step-end infinite;
+    animation: blink 0.8s step-end infinite;
     -webkit-text-fill-color: var(--accent);
+    font-weight: 300;
 }
 
 @keyframes blink {

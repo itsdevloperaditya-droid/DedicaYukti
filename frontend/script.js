@@ -54,15 +54,15 @@ function initHeroAnimation() {
     let phraseIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
-    let typingSpeed = 100;
+    let typingSpeed = 70; // Faster typing
 
     // 1. Initial Paragraph Slide-up
     setTimeout(() => {
         heroPara.classList.add('reveal-active');
         
         // 2. Start the typewriter loop after paragraph animation starts
-        setTimeout(typeLoop, 800);
-    }, 300);
+        setTimeout(typeLoop, 500);
+    }, 200);
 
     function typeLoop() {
         const currentPhrase = phrases[phraseIndex];
@@ -70,21 +70,21 @@ function initHeroAnimation() {
         if (isDeleting) {
             heroTitle.textContent = currentPhrase.substring(0, charIndex - 1);
             charIndex--;
-            typingSpeed = 50; // Deleting is faster
+            typingSpeed = 30; // Faster deleting
         } else {
             heroTitle.textContent = currentPhrase.substring(0, charIndex + 1);
             charIndex++;
-            typingSpeed = 100;
+            typingSpeed = 70; // Snappy typing
         }
 
         // Handle phrase completion
         if (!isDeleting && charIndex === currentPhrase.length) {
             isDeleting = true;
-            typingSpeed = 2000; // Pause at the end of phrase
+            typingSpeed = 1500; // Shorter pause at the end
         } else if (isDeleting && charIndex === 0) {
             isDeleting = false;
             phraseIndex = (phraseIndex + 1) % phrases.length;
-            typingSpeed = 500; // Pause before typing next phrase
+            typingSpeed = 200; // Quick transition to next phrase
         }
 
         setTimeout(typeLoop, typingSpeed);
