@@ -3139,7 +3139,7 @@ body.dark-mode .card-info-btn {
 
 .auth-divider::before,
 .auth-divider::after {
-    content: \x27\x27;
+    content: '';
     flex: 1;
     border-bottom: 1px solid var(--border-light);
 }
@@ -3503,7 +3503,7 @@ body.dark-mode .course-card {
 }
 
 .course-card-banner::after {
-    content: \x27\x27;
+    content: '';
     position: absolute;
     width: 150px;
     height: 150px;

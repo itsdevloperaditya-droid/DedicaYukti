@@ -943,6 +943,7 @@ if (unifiedInfoForm) {
         const price = document.getElementById('unified-price').value;
         const discountedPrice = document.getElementById('unified-discount').value;
         const thumbnail = document.getElementById('edit-course-thumb-base64').value;
+        console.log("📤 Updating course info. Thumbnail data length:", thumbnail ? thumbnail.length : 0);
 
         const saveBtn = unifiedInfoForm.querySelector('button[type="submit"]');
         const originalText = saveBtn.innerText;
@@ -1226,7 +1227,7 @@ async function fetchCourses() {
                     <i class="fas fa-info"></i>
                 </div>
                 <div class="course-card-banner">
-                    <img src="${thumbUrl}" alt="${course.title}" class="course-thumb-img">
+                    <img src="${thumbUrl}" alt="${course.title}" class="course-thumb-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';">
                     <div class="banner-overlay-soft"></div>
                     <span class="course-category">${course.category || 'General'}</span>
                 </div>
@@ -1925,17 +1926,40 @@ function handleAdminThumbnailSelect(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validate size (limit to 1MB for base64 efficiency)
-    if (file.size > 1024 * 1024) {
-        showToast('Image too large. Please select an image under 1MB.', 'error');
-        return;
-    }
+    // Show loading state in preview
+    const preview = document.getElementById('edit-course-thumb-preview');
+    preview.style.opacity = '0.5';
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        const base64 = e.target.result;
-        document.getElementById('edit-course-thumb-preview').src = base64;
-        document.getElementById('edit-course-thumb-base64').value = base64;
+        const img = new Image();
+        img.onload = function() {
+            // COMPRESSION LOGIC using Canvas
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            // Resize to max 400px width for efficiency
+            const MAX_WIDTH = 400;
+            if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Convert to Base64 with 0.7 quality (High quality but small size)
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+            
+            document.getElementById('edit-course-thumb-preview').src = compressedBase64;
+            document.getElementById('edit-course-thumb-base64').value = compressedBase64;
+            preview.style.opacity = '1';
+            console.log("📸 Thumbnail compressed successfully. Size reduced.");
+        };
+        img.src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
