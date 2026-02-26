@@ -1209,7 +1209,7 @@ async function fetchCourses() {
                         </div>
                         ${hasAccess ? 
                             `<button class="modern-buy-btn access" onclick="event.stopPropagation(); showCourseContent('${course._id}')">Access Now</button>` : 
-                            `<button class="modern-buy-btn buy" onclick="event.stopPropagation(); buyCourse('${course._id}', '${course.title}')">Buy Now</button>`
+                            `<button class="modern-buy-btn buy" onclick="event.stopPropagation(); showCourseDetails('${course._id}')">Buy Now</button>`
                         }
                     </div>
                 </div>
