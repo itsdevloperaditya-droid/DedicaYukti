@@ -1,25 +1,51 @@
+window.addEventListener('error', function(e) {
+    console.error("🛑 Global JS Error:", e.error);
+    if (typeof showToast === "function") {
+        // showToast("A technical error occurred. Please refresh.", "error");
+    }
+});
+
+console.log("🚀 DedicaYukti Script Loading...");
+
 // Production API URL for Render
 const API_URL = 'https://dedicayukti-be.onrender.com/api';
 const RAZORPAY_KEY_ID = 'rzp_live_SJWx8xpXBRPVsI';
 
-let currentUser = JSON.parse(localStorage.getItem('user')) || null;
+let currentUser = null;
+try {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser && savedUser !== "undefined") {
+        currentUser = JSON.parse(savedUser);
+    }
+} catch (e) {
+    console.error("❌ Error parsing user from localStorage:", e);
+}
 let activeCourseData = null;
 let currentAdminSubject = 'physics';
 let tempChapters = { physics: [], chemistry: [], maths: [] };
 let editingChapterIndex = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    initHeroAnimation();
-    fetchCourses();
-    updateAuthUI();
-    initModal();
-    initContactForm();
-    initProfilePhotoUpload();
-    initFloatingThemeToggle();
-    initAdminFacultyPhoto(); // Added for faculty photo upload
-    initHapticFeedback(); // Added for touch feedback
+    console.log("📑 DOMContentLoaded: Initializing App...");
     
-    // Close mobile menu on window resize if open
+    // 1. Fetch Courses (High Priority)
+    try { fetchCourses(); } catch(e) { console.error("Error in fetchCourses init:", e); }
+    
+    // 2. Auth & Navigation
+    try { updateAuthUI(); } catch(e) { console.error("Error in updateAuthUI init:", e); }
+    try { initModal(); } catch(e) { console.error("Error in initModal init:", e); }
+    
+    // 3. UI Enhancements
+    try { initHeroAnimation(); } catch(e) { console.error("Error in initHeroAnimation init:", e); }
+    try { initFloatingThemeToggle(); } catch(e) { console.error("Error in initFloatingThemeToggle init:", e); }
+    try { initHapticFeedback(); } catch(e) { console.error("Error in initHapticFeedback init:", e); }
+    
+    // 4. Forms & Admin
+    try { initContactForm(); } catch(e) { console.error("Error in initContactForm init:", e); }
+    try { initProfilePhotoUpload(); } catch(e) { console.error("Error in initProfilePhotoUpload init:", e); }
+    try { initAdminFacultyPhoto(); } catch(e) { console.error("Error in initAdminFacultyPhoto init:", e); }
+    
+    // Mobile Menu
     window.addEventListener('resize', function() {
         if (window.innerWidth > 768) {
             const navWrapper = document.getElementById('nav-links-wrapper');
@@ -27,8 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (navWrapper && navWrapper.classList.contains('active')) {
                 navWrapper.classList.remove('active');
                 const icon = hamburger.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
+                if (icon) {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
             }
         }
     });
@@ -1143,35 +1171,54 @@ const icons = {
  * Courses Logic
  */
 async function fetchCourses() {
+    console.log("🎬 fetchCourses() starting...");
     const container = document.getElementById('course-container');
     if (!container) return;
 
+    container.innerHTML = `
+        <div class="loader">
+            <i class="fas fa-satellite-dish fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--accent);"></i>
+            <p>Connecting to DedicaYukti Cloud...</p>
+            <small style="opacity: 0.6; font-size: 0.7rem;">Target: ${API_URL}</small>
+        </div>
+    `;
+
     try {
-        console.log("📡 Fetching courses from:", `${API_URL}/courses`);
-        
-        let purchasedCourseIds = [];
-        if (currentUser && currentUser.userId) {
-            try {
-                const userRes = await fetch(`${API_URL}/my-batches?userId=${currentUser.userId}`);
-                if (userRes.ok) {
-                    const batches = await userRes.json();
-                    if (Array.isArray(batches)) {
-                        purchasedCourseIds = batches.map(b => b._id ? b._id.toString() : b.toString());
-                    }
-                }
-            } catch(e) {
-                console.warn("⚠️ Could not fetch user batches:", e);
-            }
+        // Diagnostic Check
+        try {
+            const diagController = new AbortController();
+            const diagTimeout = setTimeout(() => diagController.abort(), 3000);
+            await fetch(`${API_URL}/test`, { signal: diagController.signal });
+            console.log("🟢 Backend server is reachable");
+            clearTimeout(diagTimeout);
+        } catch (e) {
+            console.warn("⚠️ Backend reachable check failed");
         }
 
-        const response = await fetch(`${API_URL}/courses`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // Main Data Fetch
+        const coursesPromise = fetch(`${API_URL}/courses`).then(r => {
+            if (!r.ok) throw new Error(`Server returned ${r.status}`);
+            return r.json();
+        });
+
+        let batchesPromise = Promise.resolve([]);
+        if (currentUser && currentUser.userId) {
+            const batchController = new AbortController();
+            const batchTimeout = setTimeout(() => batchController.abort(), 4000);
+            batchesPromise = fetch(`${API_URL}/my-batches?userId=${currentUser.userId}`, { signal: batchController.signal })
+                .then(r => r.ok ? r.json() : [])
+                .catch(() => [])
+                .finally(() => clearTimeout(batchTimeout));
         }
-        
-        const courses = await response.json();
-        console.log("✅ Courses received:", courses);
-        
+
+        const [courses, batches] = await Promise.all([coursesPromise, batchesPromise]);
+        console.log("✅ Courses data received:", courses.length);
+
+        let purchasedCourseIds = [];
+        if (Array.isArray(batches)) {
+            purchasedCourseIds = batches.map(b => b._id ? b._id.toString() : b.toString());
+        }
+
         container.innerHTML = '';
         if (!courses || !Array.isArray(courses) || courses.length === 0) {
             container.innerHTML = '<p class="loader">No courses available at the moment.</p>';
@@ -1184,7 +1231,6 @@ async function fetchCourses() {
             const isPurchased = course._id && purchasedCourseIds.includes(course._id.toString());
             const hasAccess = isDeveloper || isPurchased;
             
-            // Price Logic
             const originalPrice = Number(course.price) || 0;
             const discountedPrice = Number(course.discountedPrice) || 0;
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
@@ -1196,7 +1242,6 @@ async function fetchCourses() {
             }
 
             const thumbUrl = 'default-thumb.jpeg';
-
             const card = document.createElement('div');
             card.className = 'course-card';
             card.onclick = () => showCourseDetails(course._id);
@@ -1209,13 +1254,11 @@ async function fetchCourses() {
                 <div class="course-card-content">
                     <h2 class="course-title-modern">${course.title || 'Untitled Batch'}</h2>
                     <p class="course-desc-modern">${course.description || 'No description available.'}</p>
-                    
                     <div class="course-stats-modern">
                         <span><i class="far fa-play-circle"></i> Lectures</span>
                         <span><i class="far fa-star"></i> 4.9</span>
                         <span><i class="far fa-clock"></i> Lifetime</span>
                     </div>
-
                     <div class="course-footer-modern">
                         <div class="price-section-modern">
                             ${hasDiscount ? `
@@ -1236,8 +1279,18 @@ async function fetchCourses() {
             container.appendChild(card);
         });
     } catch (error) {
-        console.error("❌ Error in fetchCourses:", error);
-        container.innerHTML = `<p class="loader" style="color: var(--danger);">Unable to load courses. Please check your connection.<br><small>${error.message}</small></p>`;
+        console.error("❌ Fatal fetchCourses error:", error);
+        container.innerHTML = `
+            <div style="padding: 40px; text-align: center; background: rgba(239, 68, 68, 0.05); border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.1);">
+                <i class="fas fa-wifi" style="font-size: 2.5rem; color: #ef4444; margin-bottom: 15px;"></i>
+                <h3 style="color: #ef4444; margin-bottom: 10px;">Connection Error</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">We couldn't reach the server. Refresh or try again.</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="fetchCourses()" class="modern-buy-btn buy" style="min-width: 140px;"><i class="fas fa-sync-alt"></i> Retry</button>
+                    <button onclick="location.reload()" class="modern-buy-btn access" style="min-width: 140px; background: #64748b !important;"><i class="fas fa-redo"></i> Refresh</button>
+                </div>
+            </div>
+        `;
     }
 }
 
