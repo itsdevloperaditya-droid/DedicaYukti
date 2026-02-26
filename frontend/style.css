@@ -3461,10 +3461,12 @@ body.dark-mode .google-btn:hover {
 
 /* --- ULTRA MODERN COURSE CARDS --- */
 .course-card {
-    background: #ffffff; /* Solid white for light mode to pop against bg-primary */
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #d946ef, #3b82f6);
+    background-size: 300% auto;
+    animation: border-flow 6s linear infinite;
     border-radius: 24px;
+    padding: 1.5px; /* This creates the minimal animated border effect */
     overflow: hidden;
-    border: 2px solid transparent; /* Base for animated border */
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     flex-direction: column;
@@ -3474,47 +3476,25 @@ body.dark-mode .google-btn:hover {
 }
 
 body.dark-mode .course-card {
-    background: #1e293b; /* Deeper navy for dark mode cards */
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Animated Gradient Border Effect */
-.course-card::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
-    background-size: 200% auto;
-    border-radius: 26px;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    animation: border-flow 3s linear infinite;
-}
-
-.course-card:hover::before {
-    opacity: 1;
 }
 
 @keyframes border-flow {
     0% { background-position: 0% center; }
-    100% { background-position: 200% center; }
+    100% { background-position: 300% center; }
 }
 
 .course-card:hover {
     transform: translateY(-12px);
-    box-shadow: 0 25px 50px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 25px 50px rgba(59, 130, 246, 0.25);
 }
 
 .course-card-banner {
-    height: 100px;
-    background: var(--primary-gradient);
-    padding: 20px;
-    display: flex;
-    align-items: flex-start;
     position: relative;
+    height: 160px;
     overflow: hidden;
+    border-radius: 22.5px 22.5px 0 0; /* Match parent minus padding */
+    z-index: 1;
 }
 
 .course-card-banner::after {
@@ -3718,21 +3698,21 @@ body.dark-mode .course-card {
     display: inline-block;
 }
 
-/* Ensure no overlap */
+/* Ensure no overlap and proper border effect */
 .course-card-content {
-    background: #ffffff;
+    background: #ffffff; /* Solid for light mode */
     position: relative;
     z-index: 2;
-    border-top: 1px solid var(--border-light);
     padding: 25px;
     display: flex;
     flex-direction: column;
     flex: 1;
+    border-radius: 0 0 22.5px 22.5px; /* Match inner radius */
+    border-top: 1px solid var(--border-light);
 }
 
 body.dark-mode .course-card-content {
-    background: #1e293b;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: #1e293b; /* Deeper navy for dark mode cards */
 }
 
 
