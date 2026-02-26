@@ -279,6 +279,21 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
             document.getElementById('details-category').innerText = course.category || 'General';
             document.getElementById('details-title').innerText = course.title;
             document.getElementById('details-description').innerText = course.description;
+
+            // Set Modal Thumbnail
+            const modalThumb = document.getElementById('details-thumbnail');
+            if (modalThumb) {
+                const cat = (course.category || 'general').toLowerCase();
+                let thumbUrl = course.thumbnail || '';
+                if (!thumbUrl) {
+                    thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
+                    if (cat.includes('jee') || cat.includes('math')) thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
+                    if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+                    if (cat.includes('physic')) thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
+                    if (cat.includes('chemis')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+                }
+                modalThumb.src = thumbUrl;
+            }
             
             // Features
             const featuresList = document.getElementById('details-features-list');
@@ -767,6 +782,16 @@ async function openFullCourseManager(courseId, title) {
             document.getElementById('unified-price').value = course.price || 0;
             document.getElementById('unified-discount').value = course.discountedPrice || '';
 
+            // Thumbnail Preview
+            const thumbPreview = document.getElementById('edit-course-thumb-preview');
+            const thumbBase64 = document.getElementById('edit-course-thumb-base64');
+            if (thumbPreview) {
+                thumbPreview.src = course.thumbnail || 'https://via.placeholder.com/400x225?text=Click+to+Upload';
+            }
+            if (thumbBase64) {
+                thumbBase64.value = course.thumbnail || '';
+            }
+
             // Faculty & Features
             document.getElementById('edit-faculty-name').value = course.faculty?.name || '';
             document.getElementById('edit-faculty-bio').value = course.faculty?.bio || '';
@@ -914,6 +939,7 @@ if (unifiedInfoForm) {
         const category = document.getElementById('unified-cat').value;
         const price = document.getElementById('unified-price').value;
         const discountedPrice = document.getElementById('unified-discount').value;
+        const thumbnail = document.getElementById('edit-course-thumb-base64').value;
 
         const saveBtn = unifiedInfoForm.querySelector('button[type="submit"]');
         const originalText = saveBtn.innerText;
@@ -929,6 +955,7 @@ if (unifiedInfoForm) {
                     title, 
                     description, 
                     category, 
+                    thumbnail,
                     price, 
                     discountedPrice 
                 })
@@ -1164,13 +1191,17 @@ async function fetchCourses() {
                 discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             }
 
-            // Category-based Thumbnails
+            // Thumbnail Logic: Custom first, then category-based
             const cat = (course.category || 'general').toLowerCase();
-            let thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
-            if (cat.includes('jee') || cat.includes('math')) thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
-            if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
-            if (cat.includes('physic')) thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
-            if (cat.includes('chemis')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+            let thumbUrl = course.thumbnail || '';
+            
+            if (!thumbUrl) {
+                thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
+                if (cat.includes('jee') || cat.includes('math')) thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
+                if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+                if (cat.includes('physic')) thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
+                if (cat.includes('chemis')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
+            }
 
             const card = document.createElement('div');
             card.className = 'course-card';
@@ -1935,4 +1966,28 @@ async function handleGoogleResponse(response) {
 document.addEventListener('DOMContentLoaded', () => {
     initGoogleLogin();
 });
+
+
+
+/**
+ * --- ADMIN: BATCH THUMBNAIL UPLOAD LOGIC ---
+ */
+function handleAdminThumbnailSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate size (limit to 1MB for base64 efficiency)
+    if (file.size > 1024 * 1024) {
+        showToast(\x27Image too large. Please select an image under 1MB.\x27, \x27error\x27);
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+        document.getElementById(\x27edit-course-thumb-preview\x27).src = base64;
+        document.getElementById(\x27edit-course-thumb-base64\x27).value = base64;
+    };
+    reader.readAsDataURL(file);
+}
 

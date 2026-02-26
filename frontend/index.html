@@ -393,6 +393,21 @@
                             <label>Course Title</label>
                             <input type="text" id="unified-title" required class="modern-input">
                         </div>
+
+                        <!-- NEW: Thumbnail Upload Section -->
+                        <div class="form-group full-width">
+                            <label>Batch Card Thumbnail</label>
+                            <div class="admin-photo-upload-container" style="max-width: 300px;">
+                                <div class="admin-photo-preview-box" onclick="document.getElementById('edit-course-thumb-input').click()" style="aspect-ratio: 16/9; height: auto; border-radius: 12px; overflow: hidden; background: #eee;">
+                                    <img id="edit-course-thumb-preview" src="https://via.placeholder.com/400x225?text=Click+to+Upload" alt="Thumbnail Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div class="admin-photo-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); color: white; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;"><i class="fas fa-camera"></i></div>
+                                </div>
+                                <input type="file" id="edit-course-thumb-input" hidden accept="image/*" onchange="handleAdminThumbnailSelect(event)">
+                                <input type="hidden" id="edit-course-thumb-base64">
+                            </div>
+                            <small style="color: #999;">Recommended aspect ratio 16:9</small>
+                        </div>
+
                         <div class="form-group full-width">
                             <label>Course Description</label>
                             <textarea id="unified-desc" rows="4" required class="modern-textarea"></textarea>

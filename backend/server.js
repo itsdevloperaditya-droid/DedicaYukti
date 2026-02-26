@@ -188,7 +188,7 @@ app.post('/api/courses', async (req, res) => {
 
 // Update Course Basic Info
 app.post('/api/courses/update', async (req, res) => {
-    const { courseId, title, description, category, price, discountedPrice, faculty, features } = req.body;
+    const { courseId, title, description, category, thumbnail, price, discountedPrice, faculty, features } = req.body;
     if (!courseId || !ObjectId.isValid(courseId)) {
         return res.status(400).json({ error: 'Valid courseId is required' });
     }
@@ -200,6 +200,7 @@ app.post('/api/courses/update', async (req, res) => {
                 title, 
                 description, 
                 category, 
+                thumbnail,
                 price: Number(price),
                 discountedPrice: (discountedPrice !== undefined && discountedPrice !== null && discountedPrice !== '') ? Number(discountedPrice) : null,
                 faculty,
