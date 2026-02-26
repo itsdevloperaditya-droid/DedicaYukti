@@ -1,5 +1,5 @@
 // Production API URL for Render
-const API_URL = 'https://dedicayukti.onrender.com/api';
+const API_URL = 'https://dedicayuktiacademy.onrender.com/api';
 const RAZORPAY_KEY_ID = 'rzp_live_SJWx8xpXBRPVsI';
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
@@ -1160,23 +1160,35 @@ const icons = {
  */
 async function fetchCourses() {
     const container = document.getElementById('course-container');
+    if (!container) return;
+    
     try {
+        console.log("Fetching courses...");
         let purchasedCourseIds = [];
-        if (currentUser) {
+        if (currentUser && currentUser.userId) {
             try {
                 const userRes = await fetch(`${API_URL}/my-batches?userId=${currentUser.userId}`);
-                const batches = await userRes.json();
-                purchasedCourseIds = batches.map(b => b._id.toString());
-            } catch(e) {}
+                if (userRes.ok) {
+                    const batches = await userRes.json();
+                    purchasedCourseIds = batches.map(b => b._id.toString());
+                }
+            } catch(e) {
+                console.error("Batch fetch error:", e);
+            }
         }
 
         const response = await fetch(`${API_URL}/courses`);
+        if (!response.ok) throw new Error("Failed to fetch courses");
+        
         const courses = await response.json();
+        console.log("Courses loaded:", courses.length);
+        
         container.innerHTML = '';
         if (!courses || courses.length === 0) {
-            container.innerHTML = '<p class="loader">No courses available.</p>';
+            container.innerHTML = '<p class="loader">No courses available at this time.</p>';
             return;
         }
+
         courses.forEach(course => {
             const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
             const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
@@ -1184,19 +1196,19 @@ async function fetchCourses() {
             const hasAccess = isDeveloper || isPurchased;
             
             // Calculate if discount exists
-            const originalPrice = Number(course.price);
-            const discountedPrice = Number(course.discountedPrice);
+            const originalPrice = Number(course.price) || 0;
+            const discountedPrice = Number(course.discountedPrice) || 0;
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
             const displayPrice = hasDiscount ? discountedPrice : originalPrice;
             
             let discountPercent = 0;
-            if (hasDiscount) {
+            if (hasDiscount && originalPrice > 0) {
                 discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             }
 
             const card = document.createElement('div');
             card.className = 'course-card';
-            card.onclick = () => showCourseDetails(course._id); // Open details on click
+            card.onclick = () => showCourseDetails(course._id);
             
             card.innerHTML = `
                 <span class="course-category">${course.category || 'General'}</span>
@@ -1223,7 +1235,8 @@ async function fetchCourses() {
             container.appendChild(card);
         });
     } catch (error) {
-        container.innerHTML = '<p class="loader" style="color: var(--danger);">Error loading courses.</p>';
+        console.error("Full fetchCourses error:", error);
+        container.innerHTML = '<p class="loader" style="color: var(--danger);">Error loading courses. Please refresh the page.</p>';
     }
 }
 
