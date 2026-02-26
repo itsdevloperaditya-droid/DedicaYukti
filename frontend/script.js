@@ -283,16 +283,7 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
             // Set Modal Thumbnail
             const modalThumb = document.getElementById('details-thumbnail');
             if (modalThumb) {
-                const cat = (course.category || 'general').toLowerCase();
-                let thumbUrl = course.thumbnail || '';
-                if (!thumbUrl) {
-                    thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
-                    if (cat.includes('jee') || cat.includes('math')) thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
-                    if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
-                    if (cat.includes('physic')) thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
-                    if (cat.includes('chemis')) thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
-                }
-                modalThumb.src = thumbUrl;
+                modalThumb.src = 'default-thumb.jpeg';
             }
             
             // Features
@@ -783,16 +774,6 @@ async function openFullCourseManager(courseId, title) {
             document.getElementById('unified-price').value = course.price || 0;
             document.getElementById('unified-discount').value = course.discountedPrice || '';
 
-            // Thumbnail Preview
-            const thumbPreview = document.getElementById('edit-course-thumb-preview');
-            const thumbBase64 = document.getElementById('edit-course-thumb-base64');
-            if (thumbPreview) {
-                thumbPreview.src = course.thumbnail || 'https://via.placeholder.com/400x225?text=Click+to+Upload';
-            }
-            if (thumbBase64) {
-                thumbBase64.value = course.thumbnail || '';
-            }
-
             // Faculty & Features
             document.getElementById('edit-faculty-name').value = course.faculty?.name || '';
             document.getElementById('edit-faculty-bio').value = course.faculty?.bio || '';
@@ -841,7 +822,6 @@ async function saveFacultyFeatures(e) {
     const category = document.getElementById('unified-cat').value;
     const price = document.getElementById('unified-price').value;
     const discountedPrice = document.getElementById('unified-discount').value;
-    const thumbnail = document.getElementById('edit-course-thumb-base64').value;
 
     try {
         const res = await fetch(`${API_URL}/courses/update`, {
@@ -852,7 +832,6 @@ async function saveFacultyFeatures(e) {
                 title,
                 description,
                 category,
-                thumbnail,
                 price,
                 discountedPrice,
                 faculty: { name, photo, bio },
@@ -942,8 +921,6 @@ if (unifiedInfoForm) {
         const category = document.getElementById('unified-cat').value;
         const price = document.getElementById('unified-price').value;
         const discountedPrice = document.getElementById('unified-discount').value;
-        const thumbnail = document.getElementById('edit-course-thumb-base64').value;
-        console.log("📤 Updating course info. Thumbnail data length:", thumbnail ? thumbnail.length : 0);
 
         const saveBtn = unifiedInfoForm.querySelector('button[type="submit"]');
         const originalText = saveBtn.innerText;
@@ -959,7 +936,6 @@ if (unifiedInfoForm) {
                     title, 
                     description, 
                     category, 
-                    thumbnail,
                     price, 
                     discountedPrice 
                 })
@@ -1199,24 +1175,8 @@ async function fetchCourses() {
                 discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             }
 
-            // Thumbnail Logic: Custom first, then category-based
-            const cat = (course.category || 'general').toLowerCase();
-            let thumbUrl = (course.thumbnail && course.thumbnail.trim() !== '') ? course.thumbnail : '';
-            
-            if (!thumbUrl) {
-                // Fallback URLs
-                if (cat.includes('jee') || cat.includes('math')) {
-                    thumbUrl = 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400';
-                } else if (cat.includes('neet') || cat.includes('science') || cat.includes('bio')) {
-                    thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
-                } else if (cat.includes('physic')) {
-                    thumbUrl = 'https://images.unsplash.com/photo-1636466484292-783d8e04e798?auto=format&fit=crop&q=80&w=400';
-                } else if (cat.includes('chemis')) {
-                    thumbUrl = 'https://images.unsplash.com/photo-1532187863486-abf9d39d99c5?auto=format&fit=crop&q=80&w=400';
-                } else {
-                    thumbUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';
-                }
-            }
+            // Use the new hardcoded default thumbnail for all courses
+            const thumbUrl = 'default-thumb.jpeg';
 
             const card = document.createElement('div');
             card.className = 'course-card';
@@ -1920,47 +1880,6 @@ async function verifyPayment(paymentResponse, courseId) {
 
 
 /**
- * --- ADMIN: BATCH THUMBNAIL UPLOAD LOGIC ---
+ * --- ADMIN: BATCH MANAGEMENT LOGIC ---
  */
-function handleAdminThumbnailSelect(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // Show loading state in preview
-    const preview = document.getElementById('edit-course-thumb-preview');
-    preview.style.opacity = '0.5';
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            // COMPRESSION LOGIC using Canvas
-            const canvas = document.createElement('canvas');
-            let width = img.width;
-            let height = img.height;
-
-            // Resize to max 400px width for efficiency
-            const MAX_WIDTH = 400;
-            if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width;
-                width = MAX_WIDTH;
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            // Convert to Base64 with 0.7 quality (High quality but small size)
-            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-            
-            document.getElementById('edit-course-thumb-preview').src = compressedBase64;
-            document.getElementById('edit-course-thumb-base64').value = compressedBase64;
-            preview.style.opacity = '1';
-            console.log("📸 Thumbnail compressed successfully. Size reduced.");
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
 
