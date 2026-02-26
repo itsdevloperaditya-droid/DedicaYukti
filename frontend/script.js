@@ -1241,14 +1241,13 @@ async function fetchCourses() {
                 discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             }
 
-            const thumbUrl = 'default-thumb.jpeg';
             const card = document.createElement('div');
             card.className = 'course-card';
             card.onclick = () => showCourseDetails(course._id);
             
             card.innerHTML = `
-                <div class="course-card-banner">
-                    <img src="${thumbUrl}" alt="${course.title}" class="course-thumb-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400';">
+                <div class="course-card-banner animated-placeholder">
+                    <div class="placeholder-text-animated">DedicaYukti</div>
                     <div class="banner-overlay-soft"></div>
                 </div>
                 <div class="course-card-content">
@@ -1830,6 +1829,9 @@ async function fetchMyBatches() {
             card.style.animationDelay = `${index * 0.1}s`; // Staggered animation
             
             card.innerHTML = `
+                <div class="batch-card-banner animated-placeholder">
+                    <div class="placeholder-text-animated">DedicaYukti</div>
+                </div>
                 <div class="batch-badge">Enrolled</div>
                 <div class="batch-card-top">
                     <span class="batch-category-tag">${batch.category}</span>

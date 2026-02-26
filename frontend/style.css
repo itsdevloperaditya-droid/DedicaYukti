@@ -3886,3 +3886,67 @@ body.dark-mode .course-card-content {
     50% { opacity: 1; transform: scale(1); }
 }
 
+/* --- ANIMATED BATCH THUMBNAIL PLACEHOLDER --- */
+.course-card-banner.animated-placeholder {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #d946ef 100%);
+    background-size: 200% 200%;
+    animation: gradient-flow 10s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 160px;
+    border-radius: 22.5px 22.5px 0 0;
+    overflow: hidden;
+}
+
+.placeholder-text-animated {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    animation: text-float-pulse 3s ease-in-out infinite;
+    user-select: none;
+    z-index: 2;
+}
+
+.course-card-banner.animated-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pulse-glow 4s ease-in-out infinite;
+}
+
+@keyframes text-float-pulse {
+    0%, 100% { 
+        transform: translateY(0) scale(1);
+        filter: brightness(1);
+    }
+    50% { 
+        transform: translateY(-10px) scale(1.1);
+        filter: brightness(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* Adjustments for premium batch cards */
+.premium-batch-card .batch-card-banner {
+    height: 120px;
+    border-radius: 20px 20px 0 0;
+    margin: -25px -25px 20px -25px;
+    overflow: hidden;
+}
+
+.premium-batch-card .placeholder-text-animated {
+    font-size: 1.5rem;
+}
+
+
