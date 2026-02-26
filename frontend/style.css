@@ -3886,11 +3886,11 @@ body.dark-mode .course-card-content {
     50% { opacity: 1; transform: scale(1); }
 }
 
-/* --- ANIMATED BATCH THUMBNAIL PLACEHOLDER --- */
+/* --- PROFESSIONAL ANIMATED BATCH THUMBNAIL --- */
 .course-card-banner.animated-placeholder {
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #d946ef 100%);
-    background-size: 200% 200%;
-    animation: gradient-flow 10s ease infinite;
+    background: linear-gradient(145deg, #2563eb 0%, #7c3aed 45%, #c026d3 100%);
+    background-size: 250% 250%;
+    animation: sophisticated-flow 12s cubic-bezier(0.45, 0.05, 0.2, 0.99) infinite;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3898,55 +3898,154 @@ body.dark-mode .course-card-content {
     height: 160px;
     border-radius: 22.5px 22.5px 0 0;
     overflow: hidden;
+    isolation: isolate;
+}
+
+/* Modern noise texture overlay - Pure CSS version */
+.course-card-banner.animated-placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient(rgba(255,255,255,0.02) 0deg 90deg, rgba(0,0,0,0.02) 90deg 180deg);
+    background-size: 8px 8px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: overlay;
 }
 
 .placeholder-text-animated {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 2rem;
-    font-weight: 900;
-    color: white;
-    letter-spacing: 2px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 4px;
     text-transform: uppercase;
-    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    animation: text-float-pulse 3s ease-in-out infinite;
+    text-shadow: 
+        0 2px 10px rgba(0, 0, 0, 0.2),
+        2px 4px 20px rgba(0, 0, 0, 0.3);
+    animation: refined-float 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     user-select: none;
-    z-index: 2;
+    z-index: 3;
+    backdrop-filter: blur(0.5px);
+    position: relative;
 }
 
 .course-card-banner.animated-placeholder::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
-    animation: pulse-glow 4s ease-in-out infinite;
+    background: 
+        radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    animation: ambient-glow 6s ease-in-out infinite alternate;
+    z-index: 2;
 }
 
-@keyframes text-float-pulse {
+/* Light sweep effect - Pure CSS pseudo-element */
+.course-card-banner.animated-placeholder .placeholder-text-animated::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.08),
+        transparent
+    );
+    transform: translateX(-100%) rotate(25deg);
+    animation: light-sweep 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* Keyframe Animations */
+@keyframes sophisticated-flow {
+    0% { background-position: 0% 0%; }
+    25% { background-position: 50% 50%; }
+    50% { background-position: 100% 100%; }
+    75% { background-position: 50% 50%; }
+    100% { background-position: 0% 0%; }
+}
+
+@keyframes refined-float {
     0%, 100% { 
         transform: translateY(0) scale(1);
-        filter: brightness(1);
+        opacity: 0.95;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
     50% { 
-        transform: translateY(-10px) scale(1.1);
-        filter: brightness(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+        transform: translateY(-6px) scale(1.02);
+        opacity: 1;
+        text-shadow: 
+            0 4px 15px rgba(0, 0, 0, 0.3),
+            0 0 30px rgba(255, 255, 255, 0.3);
     }
 }
 
-@keyframes pulse-glow {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.2); }
+@keyframes ambient-glow {
+    0% { 
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    100% { 
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
 }
 
-/* Adjustments for premium batch cards */
+@keyframes light-sweep {
+    0% { transform: translateX(-150%) rotate(25deg); }
+    20% { transform: translateX(150%) rotate(25deg); }
+    100% { transform: translateX(150%) rotate(25deg); }
+}
+
+/* --- PREMIUM BATCH CARD ADJUSTMENTS --- */
 .premium-batch-card .batch-card-banner {
     height: 120px;
     border-radius: 20px 20px 0 0;
     margin: -25px -25px 20px -25px;
     overflow: hidden;
+    position: relative;
 }
 
 .premium-batch-card .placeholder-text-animated {
     font-size: 1.5rem;
+    letter-spacing: 3px;
+}
+
+/* Responsive adjustments */
+@media (prefers-reduced-motion: reduce) {
+    .course-card-banner.animated-placeholder,
+    .placeholder-text-animated,
+    .course-card-banner.animated-placeholder::before,
+    .course-card-banner.animated-placeholder .placeholder-text-animated::before {
+        animation: none;
+    }
+    
+    .course-card-banner.animated-placeholder {
+        background: linear-gradient(145deg, #2563eb, #7c3aed, #c026d3);
+    }
+}
+
+/* Extra polish for the text */
+.placeholder-text-animated::after {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+    opacity: 0;
+    animation: text-glow-pulse 4s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes text-glow-pulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.3; }
 }
 
 
