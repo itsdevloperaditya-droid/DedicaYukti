@@ -3719,9 +3719,23 @@ body.dark-mode .course-card-content {
 
 
 /* --- PREMIUM ORDER SUMMARY / BILLING SECTION --- */
+#order-summary-modal .auth-container-glass {
+    background: #1e293b !important; /* Forced Dark */
+    color: #f1f5f9 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
 .billing-card-wide {
     max-width: 500px !important;
     padding: 30px !important;
+}
+
+#order-summary-modal h2 {
+    color: #f1f5f9 !important;
+}
+
+#order-summary-modal p {
+    color: #94a3b8 !important;
 }
 
 .billing-header {
@@ -3732,8 +3746,8 @@ body.dark-mode .course-card-content {
 .billing-icon {
     width: 60px;
     height: 60px;
-    background: rgba(59, 130, 246, 0.1);
-    color: var(--accent);
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
     border-radius: 50%;
     margin: 0 auto 15px;
     display: flex;
@@ -3746,11 +3760,11 @@ body.dark-mode .course-card-content {
     display: flex;
     gap: 15px;
     align-items: center;
-    background: var(--bg-primary);
+    background: #0f172a !important; /* Extra dark background for mini preview */
     padding: 15px;
     border-radius: 16px;
     margin-bottom: 25px;
-    border: 1px solid var(--border-light);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 #summary-batch-img {
@@ -3762,13 +3776,13 @@ body.dark-mode .course-card-content {
 
 .batch-mini-info h3 {
     font-size: 1rem;
-    color: var(--text-primary);
+    color: #f1f5f9 !important;
     margin-bottom: 4px;
 }
 
 .batch-validity {
     font-size: 0.75rem;
-    color: var(--success);
+    color: #10b981;
     font-weight: 700;
 }
 
@@ -3783,17 +3797,17 @@ body.dark-mode .course-card-content {
     justify-content: space-between;
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: #cbd5e1 !important; /* Balanced light color for rows */
 }
 
 .breakdown-row.discount {
-    color: #10b981;
+    color: #10b981 !important;
 }
 
 .breakdown-row.total {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 900;
-    color: var(--text-primary);
+    color: #ffffff !important;
     padding-top: 5px;
 }
 
@@ -3804,7 +3818,7 @@ body.dark-mode .course-card-content {
 
 .billing-divider {
     height: 1px;
-    background: var(--border-light);
+    background: rgba(255, 255, 255, 0.1);
     margin: 10px 0;
 }
 
@@ -3815,11 +3829,11 @@ body.dark-mode .course-card-content {
     gap: 8px;
     margin: 20px 0;
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: #94a3b8 !important;
     font-weight: 700;
 }
 
 .billing-guarantee i {
-    color: var(--success);
+    color: #10b981;
 }
 
