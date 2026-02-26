@@ -1163,9 +1163,12 @@ async function fetchCourses() {
 
             const card = document.createElement('div');
             card.className = 'course-card';
-            card.onclick = () => showCourseDetails(course._id); // Open details on click
+            card.onclick = () => showCourseDetails(course._id);
             
             card.innerHTML = `
+                <div class="card-info-btn" title="View Details">
+                    <i class="fas fa-info"></i>
+                </div>
                 <span class="course-category">${course.category || 'General'}</span>
                 <h2>${course.title}</h2>
                 <p>${course.description || ''}</p>

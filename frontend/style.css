@@ -3047,3 +3047,61 @@ body:not(.dark-mode) .bottom-nav-item {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+
+/* --- MODERN CARD INFO BUTTON --- */
+.course-card {
+    position: relative; /* Ensure parent is relative for icon positioning */
+}
+
+.card-info-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    font-size: 0.85rem;
+}
+
+body.dark-mode .card-info-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.card-info-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    border-color: var(--accent);
+}
+
+.card-info-btn i {
+    transition: transform 0.3s ease;
+}
+
+.card-info-btn:active {
+    transform: scale(0.9);
+}
+
+/* Pulse Animation for the Info Icon */
+@keyframes info-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+.card-info-btn {
+    animation: info-pulse 2s infinite;
+}
+
