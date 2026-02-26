@@ -1138,33 +1138,47 @@ const icons = {
  */
 async function fetchCourses() {
     const container = document.getElementById('course-container');
+    if (!container) return;
+
     try {
+        console.log("📡 Fetching courses from:", `${API_URL}/courses`);
+        
         let purchasedCourseIds = [];
-        if (currentUser) {
+        if (currentUser && currentUser.userId) {
             try {
                 const userRes = await fetch(`${API_URL}/my-batches?userId=${currentUser.userId}`);
-                const batches = await userRes.json();
-                purchasedCourseIds = batches.map(b => b._id.toString());
-            } catch(e) {}
+                if (userRes.ok) {
+                    const batches = await userRes.json();
+                    if (Array.isArray(batches)) {
+                        purchasedCourseIds = batches.map(b => b._id ? b._id.toString() : b.toString());
+                    }
+                }
+            } catch(e) {
+                console.warn("⚠️ Could not fetch user batches:", e);
+            }
         }
 
         const response = await fetch(`${API_URL}/courses`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const courses = await response.json();
-        console.log("📡 API Response (Courses):", courses);
+        console.log("✅ Courses received:", courses);
         
         container.innerHTML = '';
-        if (!courses || courses.length === 0) {
-            container.innerHTML = '<p class="loader">No courses available.</p>';
+        if (!courses || !Array.isArray(courses) || courses.length === 0) {
+            container.innerHTML = '<p class="loader">No courses available at the moment.</p>';
             return;
         }
         
         courses.forEach(course => {
             const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
             const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
-            const isPurchased = purchasedCourseIds.includes(course._id.toString());
+            const isPurchased = course._id && purchasedCourseIds.includes(course._id.toString());
             const hasAccess = isDeveloper || isPurchased;
             
-            // Calculate if discount exists
+            // Price Logic
             const originalPrice = Number(course.price) || 0;
             const discountedPrice = Number(course.discountedPrice) || 0;
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
@@ -1175,7 +1189,6 @@ async function fetchCourses() {
                 discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
             }
 
-            // Use the new hardcoded default thumbnail for all courses
             const thumbUrl = 'default-thumb.jpeg';
 
             const card = document.createElement('div');
@@ -1188,8 +1201,8 @@ async function fetchCourses() {
                     <div class="banner-overlay-soft"></div>
                 </div>
                 <div class="course-card-content">
-                    <h2 class="course-title-modern">${course.title}</h2>
-                    <p class="course-desc-modern">${course.description || ''}</p>
+                    <h2 class="course-title-modern">${course.title || 'Untitled Batch'}</h2>
+                    <p class="course-desc-modern">${course.description || 'No description available.'}</p>
                     
                     <div class="course-stats-modern">
                         <span><i class="far fa-play-circle"></i> Lectures</span>
@@ -1217,7 +1230,8 @@ async function fetchCourses() {
             container.appendChild(card);
         });
     } catch (error) {
-        container.innerHTML = '<p class="loader" style="color: var(--danger);">Error loading courses.</p>';
+        console.error("❌ Error in fetchCourses:", error);
+        container.innerHTML = `<p class="loader" style="color: var(--danger);">Unable to load courses. Please check your connection.<br><small>${error.message}</small></p>`;
     }
 }
 
