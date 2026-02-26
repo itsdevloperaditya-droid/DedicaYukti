@@ -1171,25 +1171,29 @@ async function fetchCourses() {
                 <div class="card-info-btn" title="View Details">
                     <i class="fas fa-info"></i>
                 </div>
-                <span class="course-category">${course.category || 'General'}</span>
-                <h2>${course.title}</h2>
-                <p>${course.description || ''}</p>
-                <div class="course-footer">
-                    <div class="price-section">
-                        ${hasDiscount ? `
-                            <div class="discount-badge-container">
-                                <span class="original-price">₹${originalPrice}</span>
-                                <span class="discount-tag">-${discountPercent}% OFF</span>
-                            </div>
-                        ` : ''}
-                        <div class="current-price-container">
-                            <span class="course-price ${hasDiscount ? 'is-discounted' : ''}">₹${displayPrice}</span>
-                        </div>
+                <div class="course-card-banner">
+                    <span class="course-category">${course.category || 'General'}</span>
+                </div>
+                <div class="course-card-content">
+                    <h2 class="course-title-modern">${course.title}</h2>
+                    <p class="course-desc-modern">${course.description || ''}</p>
+                    
+                    <div class="course-stats-modern">
+                        <span><i class="far fa-play-circle"></i> Lectures</span>
+                        <span><i class="far fa-star"></i> 4.9</span>
+                        <span><i class="far fa-clock"></i> Lifetime</span>
                     </div>
-                    ${hasAccess ? 
-                        `<button class="buy-btn" onclick="event.stopPropagation(); showCourseContent('${course._id}')">Access Now</button>` : 
-                        `<button class="buy-btn buy-now-glow" onclick="event.stopPropagation(); buyCourse('${course._id}', '${course.title}')">Buy Now</button>`
-                    }
+
+                    <div class="course-footer-modern">
+                        <div class="price-section-modern">
+                            ${hasDiscount ? `<span class="original-price-modern">₹${originalPrice}</span>` : ''}
+                            <span class="final-price-modern">₹${displayPrice}</span>
+                        </div>
+                        ${hasAccess ? 
+                            `<button class="modern-buy-btn access" onclick="event.stopPropagation(); showCourseContent('${course._id}')">Access Now</button>` : 
+                            `<button class="modern-buy-btn buy" onclick="event.stopPropagation(); buyCourse('${course._id}', '${course.title}')">Buy Now</button>`
+                        }
+                    </div>
                 </div>
             `;
             container.appendChild(card);
