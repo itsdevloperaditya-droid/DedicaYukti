@@ -304,16 +304,25 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
             const displayPrice = hasDiscount ? discountedPrice : originalPrice;
             
-            document.getElementById('details-current-price').innerText = `₹${displayPrice}`;
+            const currentPriceEl = document.getElementById('details-current-price');
+            const originalPriceEl = document.getElementById('details-original-price');
+            const discountTagEl = document.getElementById('details-discount-tag');
+
+            if (currentPriceEl) currentPriceEl.innerText = `₹${displayPrice}`;
+            
             if (hasDiscount) {
-                document.getElementById('details-original-price').innerText = `₹${originalPrice}`;
-                document.getElementById('details-original-price').style.display = 'inline';
-                const percent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
-                document.getElementById('details-discount-tag').innerText = `${percent}% OFF`;
-                document.getElementById('details-discount-tag').style.display = 'inline-block';
+                if (originalPriceEl) {
+                    originalPriceEl.innerText = `₹${originalPrice}`;
+                    originalPriceEl.style.display = 'inline';
+                }
+                if (discountTagEl) {
+                    const percent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
+                    discountTagEl.innerText = `${percent}% OFF`;
+                    discountTagEl.style.display = 'inline-block';
+                }
             } else {
-                document.getElementById('details-original-price').style.display = 'none';
-                document.getElementById('details-discount-tag').style.display = 'none';
+                if (originalPriceEl) originalPriceEl.style.display = 'none';
+                if (discountTagEl) discountTagEl.style.display = 'none';
             }
 
             // Action Button (Enroll vs View)
