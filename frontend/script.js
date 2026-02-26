@@ -766,6 +766,7 @@ async function openFullCourseManager(courseId, title) {
     document.getElementById('edit-course-id').value = courseId;
     document.getElementById('display-course-id').innerText = courseId;
     document.getElementById('edit-content-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     
     switchManagerTab('info');
     loadCoupons(); // Load all active coupons

@@ -373,7 +373,7 @@
                     <h2 id="edit-course-title">Manage Course</h2>
                     <p class="manager-subtitle">Course ID: <span id="display-course-id">...</span></p>
                 </div>
-                <button onclick="document.getElementById('edit-content-modal').style.display='none'" class="manager-close-btn">&times;</button>
+                <button onclick="document.getElementById('edit-content-modal').style.display='none'; document.body.style.overflow='auto';" class="manager-close-btn">&times;</button>
             </div>
             
             <div class="manager-tabs">
@@ -398,7 +398,7 @@
                         <div class="form-group full-width">
                             <label>Batch Card Thumbnail</label>
                             <div class="admin-photo-upload-container" style="max-width: 300px;">
-                                <div class="admin-photo-preview-box" onclick="document.getElementById('edit-course-thumb-input').click()" style="aspect-ratio: 16/9; height: auto; border-radius: 12px; overflow: hidden; background: #eee;">
+                                <div class="admin-photo-preview-box" onclick="document.getElementById('edit-course-thumb-input').click()" style="position: relative; aspect-ratio: 16/9; height: auto; border-radius: 12px; overflow: hidden; background: #eee; cursor: pointer;">
                                     <img id="edit-course-thumb-preview" src="https://via.placeholder.com/400x225?text=Click+to+Upload" alt="Thumbnail Preview" style="width: 100%; height: 100%; object-fit: cover;">
                                     <div class="admin-photo-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); color: white; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;"><i class="fas fa-camera"></i></div>
                                 </div>
