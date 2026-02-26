@@ -45,8 +45,10 @@ function initHeroAnimation() {
 
     const phrases = [
         "Welcome to DedicaYukti",
-        "Your learning partner",
-        "Affordable study"
+        "For JEE & NEET",
+        "Smart Learning",
+        "Daily Growth",
+        "Exam Ready"
     ];
     
     let phraseIndex = 0;
