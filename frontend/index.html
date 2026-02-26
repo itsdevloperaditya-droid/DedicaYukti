@@ -522,100 +522,94 @@
     <!-- Full Screen Course Details Modal -->
     <div id="course-details-modal" class="modal full-screen-modal">
         <div class="details-modal-content">
-            <!-- Modern Header with Image Banner -->
-            <div class="details-hero-banner">
-                <div class="banner-overlay"></div>
-                <nav class="details-nav-floating">
-                    <button class="back-glass-btn" onclick="closeDetailsModal()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div class="details-logo-minimal">DedicaYukti</div>
-                    <div class="share-btn-minimal"><i class="fas fa-share-alt"></i></div>
-                </nav>
-                
-                <div class="banner-content-box">
-                    <span id="details-category" class="modern-badge">Category</span>
-                    <h1 id="details-title">Course Title</h1>
-                    <div class="header-meta">
-                        <span><i class="fas fa-star"></i> 4.9 Rating</span>
-                        <span><i class="fas fa-user-friends"></i> 5k+ Students</span>
-                        <span><i class="fas fa-clock"></i> 6 Months</span>
+            <nav class="details-nav-floating" style="position: relative; margin-bottom: 20px;">
+                <button class="back-glass-btn" onclick="closeDetailsModal()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="details-logo-minimal">Batch Detail</div>
+            </nav>
+            
+            <div class="batch-detail-container">
+                <!-- Main Container Card -->
+                <div class="batch-detail-card">
+                    <!-- Batch Header Section -->
+                    <div class="batch-detail-header">
+                        <img id="details-thumbnail" src="https://via.placeholder.com/90" class="batch-thumbnail" alt="Batch">
+                        <div class="batch-header-info">
+                            <h2 id="details-title" class="batch-name-gradient">Batch Name</h2>
+                            <div class="batch-price-row">
+                                <span id="details-current-price" class="final-price-large">₹0</span>
+                                <span id="details-original-price" class="original-price-strike">₹0</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Apply Coupon Box -->
+                    <div class="apply-coupon-card" onclick="document.getElementById('coupon-input').focus()">
+                        <div class="coupon-left">
+                            <i class="fas fa-ticket-alt coupon-icon"></i>
+                            <span class="coupon-text">Apply Code/Coupon</span>
+                        </div>
+                        <button class="coupon-apply-btn" onclick="event.stopPropagation(); applyCoupon()">Apply</button>
+                    </div>
+                    
+                    <div class="coupon-input-wrapper" style="margin-top: 10px; display: none;" id="coupon-field-wrapper">
+                        <input type="text" id="coupon-input" placeholder="Enter coupon code" class="modern-input" style="padding: 10px; font-size: 0.9rem;">
+                    </div>
+                    <div id="coupon-message" class="coupon-msg" style="margin-top: 5px; font-size: 0.85rem; font-weight: 700;"></div>
+
+                    <!-- Payment Summary Section -->
+                    <div class="payment-summary-section">
+                        <h3 class="summary-title">Payment Summary</h3>
+                        <div class="summary-row">
+                            <span class="summary-label">Price</span>
+                            <span id="summary-price" class="summary-value">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Item Discount</span>
+                            <span id="summary-item-discount" class="summary-value discount">-₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Delivery Charges</span>
+                            <span class="summary-value" style="color: var(--success);">FREE</span>
+                        </div>
+                        <div id="coupon-discount-row" class="summary-row" style="display: none;">
+                            <span class="summary-label">Coupon Discount</span>
+                            <span id="summary-coupon-discount" class="summary-value discount">-₹0</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <!-- Final Total Row -->
+                    <div class="final-total-row">
+                        <span>Final Total</span>
+                        <span id="summary-final-total">₹0</span>
+                    </div>
+                </div>
+
+                <!-- Info Section (Optional PW style info) -->
+                <div class="modern-card" style="margin-top: 10px; padding: 20px; border-radius: 16px;">
+                    <h3 class="card-title-modern" style="font-size: 1.1rem; margin-bottom: 15px;"><i class="fas fa-info-circle"></i> Batch Information</h3>
+                    <p id="details-description" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;"></p>
+                    
+                    <ul id="details-features-list" class="modern-features-grid" style="margin-top: 15px; grid-template-columns: 1fr; gap: 10px;">
+                        <!-- Features injected here -->
+                    </ul>
                 </div>
             </div>
 
-            <div class="details-main-grid">
-                <!-- Left Column: Content & Description -->
-                <div class="details-body-left">
-                    <div class="modern-card description-card">
-                        <h3 class="card-title-modern"><i class="fas fa-align-left"></i> About this Batch</h3>
-                        <p id="details-description">Full course description goes here...</p>
+            <!-- Sticky Bottom Bar -->
+            <div class="sticky-bottom-bar">
+                <div class="bottom-price-info">
+                    <div class="bottom-price-top">
+                        <span id="bottom-final-price" class="bottom-final-price">₹0</span>
+                        <span id="bottom-original-price" class="bottom-original-price" style="text-decoration: line-through; margin-left: 5px;">₹0</span>
                     </div>
-
-                    <div class="modern-card syllabus-preview">
-                        <h3 class="card-title-modern"><i class="fas fa-list-ul"></i> What you will get</h3>
-                        <ul id="details-features-list" class="modern-features-grid">
-                            <!-- Features injected here -->
-                        </ul>
-                    </div>
-
-                    <div class="modern-card instructor-card">
-                        <h3 class="card-title-modern"><i class="fas fa-chalkboard-teacher"></i> Learn from Expert</h3>
-                        <div class="instructor-profile-box">
-                            <div class="instructor-image">
-                                <img id="details-faculty-img" src="https://via.placeholder.com/80" alt="Faculty">
-                                <div class="verify-badge"><i class="fas fa-check"></i></div>
-                            </div>
-                            <div class="instructor-details">
-                                <h4 id="details-faculty-name">Dr. Aditya</h4>
-                                <p id="details-faculty-bio">Subject Matter Expert with 10+ years experience.</p>
-                                <div class="instructor-stats">
-                                    <span><b>15+</b> Courses</span>
-                                    <span><b>10k+</b> Students</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="details-discount-tag" class="discount-badge-green">0% OFF</div>
                 </div>
-
-                <!-- Right Column: Pricing & Sticky Action -->
-                <div class="details-body-right">
-                    <div class="sticky-enroll-card">
-                        <div class="pricing-header-modern">
-                            <div class="price-main-box">
-                                <div class="price-labels">
-                                    <span class="label-text">Special Launch Price</span>
-                                    <div id="details-discount-tag" class="discount-pill-modern">60% OFF</div>
-                                </div>
-                                <div class="price-numbers">
-                                    <span id="details-current-price" class="price-now">₹1999</span>
-                                    <span id="details-original-price" class="price-before">₹4999</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Coupon Modern -->
-                        <div class="coupon-section-modern">
-                            <label><i class="fas fa-ticket-alt"></i> Have a coupon?</label>
-                            <div class="coupon-input-group-modern">
-                                <input type="text" id="coupon-input" placeholder="Enter code here" class="coupon-field">
-                                <button onclick="applyCoupon()" id="apply-coupon-btn" class="coupon-btn-modern">Apply</button>
-                            </div>
-                            <div id="coupon-message" class="coupon-msg"></div>
-                        </div>
-
-                        <div class="guarantee-box-modern">
-                            <div class="g-item"><i class="fas fa-shield-alt"></i> <span>Secure Payment</span></div>
-                            <div class="g-item"><i class="fas fa-history"></i> <span>Full Access</span></div>
-                            <div class="g-item"><i class="fas fa-certificate"></i> <span>Completion Certificate</span></div>
-                        </div>
-
-                        <div id="details-action-container" class="action-btn-wrapper-modern">
-                            <!-- Button injected via script -->
-                        </div>
-                        
-                        <p class="enroll-hint">Join 500+ students already enrolled this week!</p>
-                    </div>
+                <div id="details-action-container" style="flex: 1; display: flex; justify-content: flex-end;">
+                    <!-- Button injected via script -->
                 </div>
             </div>
         </div>

@@ -45,8 +45,12 @@ function initHeroAnimation() {
 
     const phrases = [
         "Welcome to DedicaYukti",
-        "Your learning partner",
-        "Affordable study"
+    "Learn Smarter",
+    "Crack JEE & NEET",
+    "Daily Practice",
+    "Mock Tests",
+    "Clear Doubts",
+    "Achieve More"
     ];
     
     let phraseIndex = 0;
@@ -188,6 +192,13 @@ async function deleteCoupon(id) {
 }
 
 async function applyCoupon() {
+    const wrapper = document.getElementById('coupon-field-wrapper');
+    if (wrapper && wrapper.style.display === 'none') {
+        wrapper.style.display = 'block';
+        document.getElementById('coupon-input').focus();
+        return;
+    }
+
     const code = document.getElementById('coupon-input').value.trim();
     const msgEl = document.getElementById('coupon-message');
     
@@ -202,16 +213,10 @@ async function applyCoupon() {
         const data = await res.json();
 
         if (res.ok) {
-            // First, reset UI to base price before applying any coupon (fix for multiple clicks)
-            const currentCourseId = document.getElementById('details-course-id')?.value || activeCourseData?._id;
-            if (currentCourseId) {
-                // We use a small internal function or just re-fetch the base price
-                // But a simpler way is to store the base price when opening the modal
-            }
-            
             activeCoupon = { code, discount: data.discountPercentage };
             msgEl.innerText = `✅ Coupon Applied! ${data.discountPercentage}% Discount Added.`;
             msgEl.className = 'coupon-msg success';
+            msgEl.style.color = '#10b981';
             
             // Trigger Confetti Celebration!
             triggerCelebration();
@@ -222,8 +227,9 @@ async function applyCoupon() {
             activeCoupon = null;
             msgEl.innerText = `❌ ${data.error || 'Invalid Coupon'}`;
             msgEl.className = 'coupon-msg error';
+            msgEl.style.color = '#ef4444';
             // Reset price to original
-            showCourseDetails(document.getElementById('edit-course-id').value, true);
+            showCourseDetails(activeCourseData?._id || '', true);
         }
     } catch (err) {
         showToast('Error validating coupon', 'error');
@@ -233,22 +239,37 @@ async function applyCoupon() {
 function resetPriceAndApplyCoupon(discountPercent) {
     if (!activeCourseData) return;
     
-    const priceEl = document.getElementById('details-current-price');
     const originalPrice = Number(activeCourseData.price);
     const discountedPrice = Number(activeCourseData.discountedPrice);
     
     // Determine the base price (either original or already discounted price from dashboard)
     let basePrice = (discountedPrice > 0 && discountedPrice < originalPrice) ? discountedPrice : originalPrice;
     
-    // Always apply the coupon discount to the BASE price, not the current UI price
-    let newVal = Math.round(basePrice * (1 - (discountPercent / 100)));
+    // Always apply the coupon discount to the BASE price
+    let couponDiscountValue = Math.round(basePrice * (discountPercent / 100));
+    let finalTotal = basePrice - couponDiscountValue;
     
-    priceEl.innerText = `₹${newVal}`;
-    priceEl.classList.add('is-discounted');
-    
-    // Optional: add animation to show price change
-    priceEl.style.transform = 'scale(1.1)';
-    setTimeout(() => { priceEl.style.transform = 'scale(1)'; }, 200);
+    // Update Summary UI
+    const couponRow = document.getElementById('coupon-discount-row');
+    const couponValEl = document.getElementById('summary-coupon-discount');
+    const finalTotalEl = document.getElementById('summary-final-total');
+    const bottomFinalPriceEl = document.getElementById('bottom-final-price');
+
+    if (couponRow) couponRow.style.display = 'flex';
+    if (couponValEl) couponValEl.innerText = `-₹${couponDiscountValue}`;
+    if (finalTotalEl) finalTotalEl.innerText = `₹${finalTotal}`;
+    if (bottomFinalPriceEl) {
+        bottomFinalPriceEl.innerText = `₹${finalTotal}`;
+        bottomFinalPriceEl.style.transform = 'scale(1.1)';
+        setTimeout(() => { bottomFinalPriceEl.style.transform = 'scale(1)'; }, 200);
+    }
+
+    // Also update the main price display in header
+    const priceEl = document.getElementById('details-current-price');
+    if (priceEl) {
+        priceEl.innerText = `₹${finalTotal}`;
+        priceEl.classList.add('is-discounted');
+    }
 }
 
 /**
@@ -259,6 +280,8 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
         activeCoupon = null;
         if (document.getElementById('coupon-input')) document.getElementById('coupon-input').value = '';
         if (document.getElementById('coupon-message')) document.getElementById('coupon-message').innerText = '';
+        if (document.getElementById('coupon-field-wrapper')) document.getElementById('coupon-field-wrapper').style.display = 'none';
+        if (document.getElementById('coupon-discount-row')) document.getElementById('coupon-discount-row').style.display = 'none';
     }
     
     const modal = document.getElementById('course-details-modal');
@@ -273,70 +296,70 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
             // Save current course data for price reset logic
             activeCourseData = course;
             
-            // Fill details
-            document.getElementById('details-category').innerText = course.category || 'General';
-            document.getElementById('details-title').innerText = course.title;
-            document.getElementById('details-description').innerText = course.description;
+            // Fill basic details
+            if (document.getElementById('details-title')) document.getElementById('details-title').innerText = course.title;
+            if (document.getElementById('details-description')) document.getElementById('details-description').innerText = course.description;
             
             // Features
             const featuresList = document.getElementById('details-features-list');
-            featuresList.innerHTML = (course.features && course.features.length > 0) 
-                ? course.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')
-                : `
-                    <li><i class="fas fa-check-circle"></i> Full Syllabus Coverage</li>
-                    <li><i class="fas fa-check-circle"></i> Live Interactive Classes</li>
-                    <li><i class="fas fa-check-circle"></i> Expert Doubt Sessions</li>
-                    <li><i class="fas fa-check-circle"></i> PDF Study Materials</li>
-                `;
-
-            // Faculty
-            document.getElementById('details-faculty-name').innerText = course.faculty?.name || 'Expert Faculty';
-            document.getElementById('details-faculty-bio').innerText = course.faculty?.bio || 'Experienced educator for Science & Competitive exams.';
-            if (course.faculty?.photo) {
-                document.getElementById('details-faculty-img').src = course.faculty.photo;
-            } else {
-                document.getElementById('details-faculty-img').src = 'https://via.placeholder.com/80';
+            if (featuresList) {
+                featuresList.innerHTML = (course.features && course.features.length > 0) 
+                    ? course.features.slice(0, 4).map(f => `<li><i class="fas fa-check-circle" style="color:var(--success);"></i> ${f}</li>`).join('')
+                    : `
+                        <li><i class="fas fa-check-circle" style="color:var(--success);"></i> Full Syllabus Coverage</li>
+                        <li><i class="fas fa-check-circle" style="color:var(--success);"></i> Expert Video Lectures</li>
+                    `;
             }
 
-            // Price
+            // Price & Summary Calculations
             const originalPrice = Number(course.price);
             const discountedPrice = Number(course.discountedPrice);
             const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
             const displayPrice = hasDiscount ? discountedPrice : originalPrice;
-            
+            const itemDiscount = hasDiscount ? (originalPrice - discountedPrice) : 0;
+            const discountPercent = Math.round((itemDiscount / originalPrice) * 100);
+
+            // Update Header Price
             const currentPriceEl = document.getElementById('details-current-price');
             const originalPriceEl = document.getElementById('details-original-price');
-            const discountTagEl = document.getElementById('details-discount-tag');
-
             if (currentPriceEl) currentPriceEl.innerText = `₹${displayPrice}`;
-            
-            if (hasDiscount) {
-                if (originalPriceEl) {
-                    originalPriceEl.innerText = `₹${originalPrice}`;
-                    originalPriceEl.style.display = 'inline';
-                }
-                if (discountTagEl) {
-                    const percent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
-                    discountTagEl.innerText = `${percent}% OFF`;
-                    discountTagEl.style.display = 'inline-block';
-                }
-            } else {
-                if (originalPriceEl) originalPriceEl.style.display = 'none';
-                if (discountTagEl) discountTagEl.style.display = 'none';
+            if (originalPriceEl) {
+                originalPriceEl.innerText = `₹${originalPrice}`;
+                originalPriceEl.style.display = hasDiscount ? 'inline' : 'none';
+            }
+
+            // Update Payment Summary
+            if (document.getElementById('summary-price')) document.getElementById('summary-price').innerText = `₹${originalPrice}`;
+            if (document.getElementById('summary-item-discount')) document.getElementById('summary-item-discount').innerText = `-₹${itemDiscount}`;
+            if (document.getElementById('summary-final-total')) document.getElementById('summary-final-total').innerText = `₹${displayPrice}`;
+
+            // Update Bottom Bar
+            const bottomFinalPriceEl = document.getElementById('bottom-final-price');
+            const bottomOriginalPriceEl = document.getElementById('bottom-original-price');
+            const bottomDiscountBadge = document.getElementById('details-discount-tag');
+
+            if (bottomFinalPriceEl) bottomFinalPriceEl.innerText = `₹${displayPrice}`;
+            if (bottomOriginalPriceEl) {
+                bottomOriginalPriceEl.innerText = `₹${originalPrice}`;
+                bottomOriginalPriceEl.style.display = hasDiscount ? 'inline' : 'none';
+            }
+            if (bottomDiscountBadge) {
+                bottomDiscountBadge.innerText = `${discountPercent}% OFF`;
+                bottomDiscountBadge.style.display = hasDiscount ? 'inline-block' : 'none';
             }
 
             // Action Button (Enroll vs View)
             const actionContainer = document.getElementById('details-action-container');
             if (course.hasPurchased) {
                 actionContainer.innerHTML = `
-                    <button class="dashboard-btn-large" onclick="closeDetailsModal(); showCourseContent('${course._id}')">
-                        <i class="fas fa-play-circle"></i> View Batch Content
+                    <button class="proceed-buy-btn" onclick="closeDetailsModal(); showCourseContent('${course._id}')">
+                        <i class="fas fa-play-circle" style="margin-right:8px;"></i> VIEW BATCH
                     </button>
                 `;
             } else {
                 actionContainer.innerHTML = `
-                    <button class="enroll-btn-large" onclick="buyCourse('${course._id}', '${course.title}')">
-                        <i class="fas fa-shopping-cart"></i> Enroll in Batch Now
+                    <button class="proceed-buy-btn" onclick="buyCourse('${course._id}', '${course.title}')">
+                        PROCEED TO BUY
                     </button>
                 `;
             }
@@ -351,6 +374,7 @@ async function showCourseDetails(courseId, isResetPriceOnly = false) {
             document.body.style.overflow = 'hidden';
         }
     } catch (err) {
+        console.error('Error loading details:', err);
         showToast('Error loading details', 'error');
     }
 }
