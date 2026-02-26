@@ -1761,10 +1761,35 @@ async function buyCourse(courseId, courseTitle) {
             description: courseTitle + (couponCode ? ` (Applied: ${couponCode})` : ''),
             order_id: orderData.orderId,
             handler: function (res) { verifyPayment(res, courseId); },
-            prefill: { email: currentUser.email },
-            theme: { color: '#3b82f6' }
+            prefill: { 
+                name: currentUser.name || '',
+                email: currentUser.email,
+                contact: currentUser.phone || ''
+            },
+            notes: {
+                course_id: courseId,
+                user_id: currentUser.userId,
+                source: 'web_mobile'
+            },
+            theme: { color: '#3b82f6' },
+            modal: {
+                ondismiss: function() {
+                    console.log('Checkout modal closed');
+                },
+                confirm_close: true,
+                escape: false // Prevent accidental closing on mobile back button
+            },
+            retry: {
+                enabled: true,
+                max_count: 3
+            },
+            send_sms_hash: true // Helps with auto-reading OTP on Android
         };
-        new Razorpay(options).open();
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response){
+            showToast('Payment failed: ' + response.error.description, 'error');
+        });
+        rzp.open();
     } catch (err) {
         showToast('Error creating order', 'error');
     }

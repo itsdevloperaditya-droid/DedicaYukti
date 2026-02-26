@@ -111,7 +111,7 @@ app.get('/api/course-details', async (req, res) => {
         if (userId && ObjectId.isValid(userId)) {
             const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
             if (user) {
-                const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
+                const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
                 if (developerEmails.includes(user.email) || (user.purchasedCourses && user.purchasedCourses.some(id => id.toString() === courseId))) {
                     hasPurchased = true;
                 }
@@ -297,7 +297,7 @@ app.get('/api/my-batches', async (req, res) => {
         const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com'];
+        const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
         if (developerEmails.includes(user.email)) {
             const allCourses = await db.collection('courses').find({}).toArray();
             return res.json(allCourses);
