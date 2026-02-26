@@ -3077,10 +3077,10 @@ body:not(.dark-mode) .bottom-nav-item {
 
 .card-info-btn {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 32px;
-    height: 32px;
+    bottom: 25px; /* Moved to bottom */
+    left: 20px;   /* Moved to left */
+    width: 30px;
+    height: 30px;
     background: rgba(59, 130, 246, 0.1);
     color: var(--accent);
     border-radius: 50%;
@@ -3091,7 +3091,7 @@ body:not(.dark-mode) .bottom-nav-item {
     z-index: 10;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(59, 130, 246, 0.2);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 body.dark-mode .card-info-btn {

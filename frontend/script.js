@@ -1202,7 +1202,7 @@ async function fetchCourses() {
                     </div>
 
                     <div class="course-footer-modern">
-                        <div class="price-section-modern">
+                        <div class="price-section-modern" style="padding-left: 35px;">
                             ${hasDiscount ? `
                                 <div class="discount-row-modern" style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                                     <span class="original-price-modern" style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">₹${originalPrice}</span>
