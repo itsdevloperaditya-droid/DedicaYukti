@@ -4291,3 +4291,116 @@ body.dark-mode .course-card-content {
 }
 
 
+
+/* Dashboard & Study Zone Styles */
+.dashboard{
+padding:20px;
+font-family:Poppins, sans-serif;
+}
+
+.event-box h3{
+font-size:22px;
+margin-bottom:15px;
+color: var(--text-primary);
+}
+
+.event-card{
+display:flex;
+align-items:center;
+background: var(--bg-secondary);
+border-radius:14px;
+padding:15px;
+box-shadow:0 8px 25px rgba(0,0,0,0.08);
+}
+
+.teacher{
+width:55px;
+height:55px;
+border-radius:12px;
+margin-right:15px;
+}
+
+.event-info h4{
+margin:2px 0;
+font-size:16px;
+color: var(--text-primary);
+}
+
+.event-info p{
+color: var(--text-muted);
+font-size:13px;
+}
+
+.time{
+color:#6a5cff;
+font-weight:600;
+}
+
+.schedule-btn{
+width:100%;
+margin-top:15px;
+padding:12px;
+border:none;
+border-radius:10px;
+background:linear-gradient(45deg,#5f7cff,#9b59ff);
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+.study-zone{
+margin-top:30px;
+}
+
+.study-zone h3{
+font-size:22px;
+margin-bottom:15px;
+color: var(--text-primary);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
+
+.card{
+background: var(--bg-secondary);
+padding:18px;
+border-radius:14px;
+text-align:center;
+box-shadow:0 8px 25px rgba(0,0,0,0.08);
+transition:0.3s;
+cursor: pointer;
+}
+
+.card span{
+font-size:26px;
+display:block;
+margin-bottom:6px;
+}
+
+.card p{
+font-size:14px;
+font-weight:500;
+color: var(--text-primary);
+}
+
+.card:hover{
+transform:translateY(-5px);
+border: 1px solid var(--accent);
+}
+
+.back-link-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+

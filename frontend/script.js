@@ -411,10 +411,16 @@ function showSection(sectionId) {
         targetSection.classList.remove('hidden');
     }
 
+    // Special logic for Study section - reset to dashboard view
+    if (sectionId === 'study') {
+        showStudyZone();
+    }
+
     // Handle Bottom Nav Active State
     const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
     bottomNavItems.forEach(item => {
-        const isCurrent = item.getAttribute('onclick').includes(`'${sectionId}'`);
+        const onclickAttr = item.getAttribute('onclick');
+        const isCurrent = onclickAttr && onclickAttr.includes(`'${sectionId}'`);
         item.classList.toggle('active', isCurrent);
     });
 
@@ -430,10 +436,12 @@ function showSection(sectionId) {
 
     // Special logic for each section
     if (sectionId === 'home') {
-        document.getElementById('hero-section').classList.remove('hidden');
+        const hero = document.getElementById('hero-section');
+        if (hero) hero.classList.remove('hidden');
         fetchCourses();
     } else {
-        document.getElementById('hero-section').classList.add('hidden');
+        const hero = document.getElementById('hero-section');
+        if (hero) hero.classList.add('hidden');
     }
 
     if (sectionId === 'more') {
@@ -442,9 +450,41 @@ function showSection(sectionId) {
 
     if (sectionId === 'profile') {
         fetchUserProfile();
-    } else if (sectionId === 'batches') {
+    } else if (sectionId === 'batches' || sectionId === 'study') {
         fetchMyBatches();
     }
+}
+
+/**
+ * Study Zone Helpers
+ */
+function showStudyZone() {
+    const studySection = document.getElementById('study-section');
+    if (!studySection) return;
+    
+    const dashboard = studySection.querySelector('.dashboard');
+    const batchesContainer = document.getElementById('batches-container');
+    const backContainer = document.getElementById('study-back-container');
+
+    if (dashboard) dashboard.classList.remove('hidden');
+    if (batchesContainer) batchesContainer.classList.add('hidden');
+    if (backContainer) backContainer.classList.add('hidden');
+}
+
+function showMyBatchesSub() {
+    const studySection = document.getElementById('study-section');
+    if (!studySection) return;
+
+    const dashboard = studySection.querySelector('.dashboard');
+    const batchesContainer = document.getElementById('batches-container');
+    const backContainer = document.getElementById('study-back-container');
+
+    if (dashboard) dashboard.classList.add('hidden');
+    if (batchesContainer) {
+        batchesContainer.classList.remove('hidden');
+        fetchMyBatches(); // Load batches
+    }
+    if (backContainer) backContainer.classList.remove('hidden');
 }
 
 /**

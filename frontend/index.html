@@ -34,7 +34,7 @@
                 
                 <div class="nav-links main-nav">
                     <a href="#" onclick="showSection('home')">Home</a>
-                    <a href="#" onclick="showSection('batches')">Your Batches</a>
+                    <a href="#" onclick="showSection('study')">Study</a>
                     <a href="#" onclick="showSection('profile')">Profile</a>
                     <a href="#" onclick="showSection('more')">Contact Us</a>
                 </div>
@@ -207,9 +207,59 @@
             </div>
         </section>
 
-        <!-- Your Batches Section -->
-        <section id="batches-section" class="content-section hidden">
-            <div id="batches-container" class="course-grid">
+        <!-- Study Section -->
+        <section id="study-section" class="content-section hidden">
+            <section class="dashboard">
+                <div class="event-box">
+                    <h3>Upcoming Events</h3>
+                    <div class="event-card">
+                        <img src="https://i.pravatar.cc/80" class="teacher">
+                        <div class="event-info">
+                            <span class="time">04:00 PM</span>
+                            <h4>Lecture • Physics</h4>
+                            <p>Live Practice Session</p>
+                        </div>
+                    </div>
+                    <button class="schedule-btn">View Weekly Schedule</button>
+                </div>
+
+                <div class="study-zone">
+                    <h3>My Study Zone</h3>
+                    <div class="grid">
+                        <div class="card" onclick="showMyBatchesSub()">
+                            <span>🎓</span>
+                            <p>My Batches</p>
+                        </div>
+                        <div class="card">
+                            <span>⬇</span>
+                            <p>Downloads</p>
+                        </div>
+                        <div class="card">
+                            <span>📊</span>
+                            <p>Dashboard</p>
+                        </div>
+                        <div class="card">
+                            <span>📚</span>
+                            <p>Library</p>
+                        </div>
+                        <div class="card">
+                            <span>🕒</span>
+                            <p>History</p>
+                        </div>
+                        <div class="card">
+                            <span>🔖</span>
+                            <p>Bookmarks</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Back to study zone link (initially hidden) -->
+            <div id="study-back-container" class="hidden" style="padding: 0 20px;">
+                <button class="back-link-btn" onclick="showStudyZone()"><i class="fas fa-arrow-left"></i> Back to Study Zone</button>
+            </div>
+
+            <div id="batches-container" class="course-grid hidden" style="padding: 20px;">
                 <div class="loader">Loading your batches...</div>
             </div>
         </section>
@@ -704,9 +754,9 @@
             <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
-        <a href="#" class="bottom-nav-item" onclick="showSection('batches')">
-            <i class="fas fa-graduation-cap"></i>
-            <span>Batches</span>
+        <a href="#" class="bottom-nav-item" onclick="showSection('study')">
+            <i class="fas fa-book-reader"></i>
+            <span>Study</span>
         </a>
         <a href="#" class="bottom-nav-item" onclick="showSection('profile')">
             <i class="fas fa-user-circle"></i>
