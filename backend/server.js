@@ -114,7 +114,8 @@ app.get('/api/admin/stats', async (req, res) => {
         const db = getDb();
         const totalCourses = await db.collection('courses').countDocuments();
         const totalUsers = await db.collection('users').countDocuments();
-        const courses = await db.collection('courses').find({}).toArray();
+        // Optimize: Only fetch price fields to calculate revenue
+        const courses = await db.collection('courses').find({}).project({ price: 1, discountedPrice: 1 }).toArray();
         const totalPotentialRevenue = courses.reduce((sum, c) => {
             const price = c.discountedPrice ? Number(c.discountedPrice) : Number(c.price);
             return sum + (price || 0);
@@ -126,11 +127,44 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
+/**
+ * CACHE MECHANISM
+ */
+let courseCache = null;
+let lastFetchTime = 0;
+const CACHE_DURATION = 60000; // 60 seconds cache
+
+function clearCourseCache() {
+    courseCache = null;
+    lastFetchTime = 0;
+}
+
 // Get All Courses
 app.get('/api/courses', async (req, res) => {
+    const now = Date.now();
+    // Use cache if available and not expired
+    if (courseCache && (now - lastFetchTime < CACHE_DURATION)) {
+        return res.json(courseCache);
+    }
+
     try {
         const db = getDb();
-        const courses = await db.collection('courses').find({}).toArray();
+        // Optimize: Use projection to exclude large fields for the course list
+        const projection = {
+            thumbnail: 0,
+            chapters: 0,
+            videoLinks: 0,
+            pdfLinks: 0,
+            testLinks: 0,
+            features: 0,
+            faculty: 0
+        };
+        const courses = await db.collection('courses').find({}).project(projection).toArray();
+        
+        // Update cache
+        courseCache = courses;
+        lastFetchTime = now;
+        
         res.json(courses);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch courses' });
@@ -180,6 +214,7 @@ app.get('/api/course-details', async (req, res) => {
 app.post('/api/courses', async (req, res) => {
     try {
         const result = await createCourse(req.body);
+        clearCourseCache(); // Clear cache after modification
         res.status(201).json({ message: 'Course created successfully', course: result });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -213,6 +248,7 @@ app.post('/api/courses/update', async (req, res) => {
             { _id: new ObjectId(courseId) },
             { $set: updateData }
         );
+        clearCourseCache(); // Clear cache after modification
         res.json({ message: 'Course updated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -230,6 +266,7 @@ app.post('/api/update-course-content', async (req, res) => {
             { _id: new ObjectId(courseId) },
             { $set: { videoLinks, pdfLinks, testLinks, chapters } }
         );
+        clearCourseCache(); // Clear cache after modification
         res.json({ message: 'Course content updated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -248,6 +285,7 @@ app.post('/api/courses/delete', async (req, res) => {
         if (result.deletedCount === 0) {
             return res.status(404).json({ error: 'Course not found' });
         }
+        clearCourseCache(); // Clear cache after modification
         res.json({ message: 'Course deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -351,8 +389,20 @@ app.get('/api/my-batches', async (req, res) => {
         if (!user) return res.status(404).json({ error: 'User not found' });
 
         const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
+        
+        // Optimize: Use projection to exclude large fields for the batches list
+        const projection = {
+            thumbnail: 0,
+            chapters: 0,
+            videoLinks: 0,
+            pdfLinks: 0,
+            testLinks: 0,
+            features: 0,
+            faculty: 0
+        };
+
         if (developerEmails.includes(user.email)) {
-            const allCourses = await db.collection('courses').find({}).toArray();
+            const allCourses = await db.collection('courses').find({}).project(projection).toArray();
             return res.json(allCourses);
         }
 
@@ -361,7 +411,7 @@ app.get('/api/my-batches', async (req, res) => {
         }
         const batches = await db.collection('courses').find({
             _id: { $in: user.purchasedCourses.map(id => new ObjectId(id)) }
-        }).toArray();
+        }).project(projection).toArray();
         res.json(batches);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch batches' });

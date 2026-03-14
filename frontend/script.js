@@ -1175,27 +1175,31 @@ async function fetchCourses() {
     const container = document.getElementById('course-container');
     if (!container) return;
 
-    container.innerHTML = `
-        <div class="loader">
-            <i class="fas fa-satellite-dish fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--accent);"></i>
-            <p>Connecting to DedicaYukti Cloud...</p>
-            <small style="opacity: 0.6; font-size: 0.7rem;">Target: ${API_URL}</small>
-        </div>
-    `;
+    // 1. STALE-WHILE-REVALIDATE: Try to load from local cache first for instant display
+    const cachedCourses = localStorage.getItem('cached_courses');
+    const cachedBatches = localStorage.getItem('cached_batches');
+    
+    if (cachedCourses) {
+        try {
+            const courses = JSON.parse(cachedCourses);
+            const batches = cachedBatches ? JSON.parse(cachedBatches) : [];
+            console.log("⚡ Rendering from cache for speed...");
+            renderCourses(courses, batches);
+        } catch (e) {
+            console.warn("⚠️ Cache parse failed", e);
+        }
+    } else {
+        container.innerHTML = `
+            <div class="loader">
+                <i class="fas fa-satellite-dish fa-spin" style="font-size: 2rem; margin-bottom: 15px; color: var(--accent);"></i>
+                <p>Connecting to DedicaYukti Cloud...</p>
+                <small style="opacity: 0.6; font-size: 0.7rem;">Target: ${API_URL}</small>
+            </div>
+        `;
+    }
 
     try {
-        // Diagnostic Check
-        try {
-            const diagController = new AbortController();
-            const diagTimeout = setTimeout(() => diagController.abort(), 3000);
-            await fetch(`${API_URL}/test`, { signal: diagController.signal });
-            console.log("🟢 Backend server is reachable");
-            clearTimeout(diagTimeout);
-        } catch (e) {
-            console.warn("⚠️ Backend reachable check failed");
-        }
-
-        // Main Data Fetch
+        // 2. Fetch Fresh Data in background
         const coursesPromise = fetch(`${API_URL}/courses`).then(r => {
             if (!r.ok) throw new Error(`Server returned ${r.status}`);
             return r.json();
@@ -1212,85 +1216,101 @@ async function fetchCourses() {
         }
 
         const [courses, batches] = await Promise.all([coursesPromise, batchesPromise]);
-        console.log("✅ Courses data received:", courses.length);
+        console.log("✅ Fresh courses data received:", courses.length);
 
-        let purchasedCourseIds = [];
-        if (Array.isArray(batches)) {
-            purchasedCourseIds = batches.map(b => b._id ? b._id.toString() : b.toString());
-        }
+        // Update cache for next time
+        localStorage.setItem('cached_courses', JSON.stringify(courses));
+        localStorage.setItem('cached_batches', JSON.stringify(batches));
 
-        container.innerHTML = '';
-        if (!courses || !Array.isArray(courses) || courses.length === 0) {
-            container.innerHTML = '<p class="loader">No courses available at the moment.</p>';
-            return;
-        }
+        // Render fresh data
+        renderCourses(courses, batches);
         
-        courses.forEach(course => {
-            const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
-            const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
-            const isPurchased = course._id && purchasedCourseIds.includes(course._id.toString());
-            const hasAccess = isDeveloper || isPurchased;
-            
-            const originalPrice = Number(course.price) || 0;
-            const discountedPrice = Number(course.discountedPrice) || 0;
-            const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
-            const displayPrice = hasDiscount ? discountedPrice : originalPrice;
-            
-            let discountPercent = 0;
-            if (hasDiscount && originalPrice > 0) {
-                discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
-            }
-
-            const card = document.createElement('div');
-            card.className = 'course-card';
-            card.onclick = () => showCourseDetails(course._id);
-            
-            card.innerHTML = `
-                <div class="course-card-banner animated-placeholder">
-                    <div class="placeholder-text-animated">DedicaYukti</div>
-                    <div class="banner-overlay-soft"></div>
-                </div>
-                <div class="course-card-content">
-                    <h2 class="course-title-modern">${course.title || 'Untitled Batch'}</h2>
-                    <p class="course-desc-modern">${course.description || 'No description available.'}</p>
-                    <div class="course-stats-modern">
-                        <span><i class="far fa-play-circle"></i> Lectures</span>
-                        <span><i class="far fa-star"></i> 4.9</span>
-                        <span><i class="far fa-clock"></i> Lifetime</span>
-                    </div>
-                    <div class="course-footer-modern">
-                        <div class="price-section-modern">
-                            ${hasDiscount ? `
-                                <div class="discount-row-modern" style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                                    <span class="original-price-modern" style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">₹${originalPrice}</span>
-                                    <span class="discount-tag-modern">-${discountPercent}%</span>
-                                </div>
-                            ` : ''}
-                            <span class="final-price-modern" style="font-size: 1.5rem; font-weight: 900; color: #3b82f6;">₹${displayPrice}</span>
-                        </div>
-                        ${hasAccess ? 
-                            `<button class="modern-buy-btn access" onclick="event.stopPropagation(); showCourseContent('${course._id}')">Access Now</button>` : 
-                            `<button class="modern-buy-btn buy" onclick="event.stopPropagation(); showCourseDetails('${course._id}')">Buy Now</button>`
-                        }
+    } catch (error) {
+        console.error("❌ Fatal fetchCourses error:", error);
+        // Only show error if we have NO cached data
+        if (!container.innerHTML || container.querySelector('.loader')) {
+            container.innerHTML = `
+                <div style="padding: 40px; text-align: center; background: rgba(239, 68, 68, 0.05); border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.1);">
+                    <i class="fas fa-wifi" style="font-size: 2.5rem; color: #ef4444; margin-bottom: 15px;"></i>
+                    <h3 style="color: #ef4444; margin-bottom: 10px;">Connection Error</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">We couldn't reach the server. Refresh or try again.</p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="fetchCourses()" class="modern-buy-btn buy" style="min-width: 140px;"><i class="fas fa-sync-alt"></i> Retry</button>
+                        <button onclick="location.reload()" class="modern-buy-btn access" style="min-width: 140px; background: #64748b !important;"><i class="fas fa-redo"></i> Refresh</button>
                     </div>
                 </div>
             `;
-            container.appendChild(card);
-        });
-    } catch (error) {
-        console.error("❌ Fatal fetchCourses error:", error);
-        container.innerHTML = `
-            <div style="padding: 40px; text-align: center; background: rgba(239, 68, 68, 0.05); border-radius: 20px; border: 1px solid rgba(239, 68, 68, 0.1);">
-                <i class="fas fa-wifi" style="font-size: 2.5rem; color: #ef4444; margin-bottom: 15px;"></i>
-                <h3 style="color: #ef4444; margin-bottom: 10px;">Connection Error</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">We couldn't reach the server. Refresh or try again.</p>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button onclick="fetchCourses()" class="modern-buy-btn buy" style="min-width: 140px;"><i class="fas fa-sync-alt"></i> Retry</button>
-                    <button onclick="location.reload()" class="modern-buy-btn access" style="min-width: 140px; background: #64748b !important;"><i class="fas fa-redo"></i> Refresh</button>
+        }
+    }
+}
+
+function renderCourses(courses, batches) {
+    const container = document.getElementById('course-container');
+    if (!container) return;
+
+    let purchasedCourseIds = [];
+    if (Array.isArray(batches)) {
+        purchasedCourseIds = batches.map(b => b._id ? b._id.toString() : b.toString());
+    }
+
+    container.innerHTML = '';
+    if (!courses || !Array.isArray(courses) || courses.length === 0) {
+        container.innerHTML = '<p class="loader">No courses available at the moment.</p>';
+        return;
+    }
+    
+    courses.forEach(course => {
+        const developerEmails = ['its.devloper.aditya@gmail.com', 'ankeshanandart@gmail.com', 'niraj.kumar297@gmail.com'];
+        const isDeveloper = currentUser && developerEmails.includes(currentUser.email);
+        const isPurchased = course._id && purchasedCourseIds.includes(course._id.toString());
+        const hasAccess = isDeveloper || isPurchased;
+        
+        const originalPrice = Number(course.price) || 0;
+        const discountedPrice = Number(course.discountedPrice) || 0;
+        const hasDiscount = discountedPrice > 0 && discountedPrice < originalPrice;
+        const displayPrice = hasDiscount ? discountedPrice : originalPrice;
+        
+        let discountPercent = 0;
+        if (hasDiscount && originalPrice > 0) {
+            discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'course-card';
+        card.onclick = () => showCourseDetails(course._id);
+        
+        card.innerHTML = `
+            <div class="course-card-banner animated-placeholder">
+                <div class="placeholder-text-animated">DedicaYukti</div>
+                <div class="banner-overlay-soft"></div>
+            </div>
+            <div class="course-card-content">
+                <h2 class="course-title-modern">${course.title || 'Untitled Batch'}</h2>
+                <p class="course-desc-modern">${course.description || 'No description available.'}</p>
+                <div class="course-stats-modern">
+                    <span><i class="far fa-play-circle"></i> Lectures</span>
+                    <span><i class="far fa-star"></i> 4.9</span>
+                    <span><i class="far fa-clock"></i> Lifetime</span>
+                </div>
+                <div class="course-footer-modern">
+                    <div class="price-section-modern">
+                        ${hasDiscount ? `
+                            <div class="discount-row-modern" style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                <span class="original-price-modern" style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">₹${originalPrice}</span>
+                                <span class="discount-tag-modern">-${discountPercent}%</span>
+                            </div>
+                        ` : ''}
+                        <span class="final-price-modern" style="font-size: 1.5rem; font-weight: 900; color: #3b82f6;">₹${displayPrice}</span>
+                    </div>
+                    ${hasAccess ? 
+                        `<button class="modern-buy-btn access" onclick="event.stopPropagation(); showCourseContent('${course._id}')">Access Now</button>` : 
+                        `<button class="modern-buy-btn buy" onclick="event.stopPropagation(); showCourseDetails('${course._id}')">Buy Now</button>`
+                    }
                 </div>
             </div>
         `;
-    }
+        container.appendChild(card);
+    });
 }
 
 async function showCourseContent(courseId) {
