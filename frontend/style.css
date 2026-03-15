@@ -4292,7 +4292,7 @@ body.dark-mode .course-card-content {
 
 
 
-/* Dashboard & Study Zone Styles */
+
 .dashboard{
 padding:20px;
 font-family:Poppins, sans-serif;
@@ -4358,13 +4358,14 @@ margin-bottom:15px;
 color: var(--text-primary);
 }
 
-.grid{
+.study-grid{
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:15px;
+width: 100%;
 }
 
-.card{
+.study-card{
 background: var(--bg-secondary);
 padding:18px;
 border-radius:14px;
@@ -4372,23 +4373,93 @@ text-align:center;
 box-shadow:0 8px 25px rgba(0,0,0,0.08);
 transition:0.3s;
 cursor: pointer;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 100%;
+min-height: 110px;
+border: 1px solid transparent;
 }
 
-.card span{
+.study-card span{
 font-size:26px;
 display:block;
 margin-bottom:6px;
 }
 
-.card p{
+.study-card p{
 font-size:14px;
 font-weight:500;
 color: var(--text-primary);
+margin: 0;
 }
 
-.card:hover{
+.study-card:hover{
 transform:translateY(-5px);
 border: 1px solid var(--accent);
+}
+
+/* Responsive adjustments for Study Section */
+@media screen and (max-width: 768px) {
+    .dashboard {
+        padding: 15px;
+    }
+    
+    .study-grid {
+        gap: 12px;
+    }
+    
+    .study-card {
+        padding: 15px 10px;
+        min-height: 100px;
+    }
+    
+    .study-card span {
+        font-size: 22px;
+    }
+    
+    .study-card p {
+        font-size: 13px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .dashboard {
+        padding: 15px 10px;
+        text-align: center;
+    }
+    
+    .study-zone h3, .event-box h3 {
+        font-size: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .event-card {
+        text-align: left;
+    }
+    
+    .study-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .study-card {
+        padding: 12px 5px;
+        min-height: 85px;
+        border-radius: 12px;
+    }
+    
+    .study-card span {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+    
+    .study-card p {
+        font-size: 11px;
+        line-height: 1.1;
+    }
 }
 
 .back-link-btn {
