@@ -462,6 +462,9 @@ function showStudyZone() {
     const studySection = document.getElementById('study-section');
     if (!studySection) return;
     
+    // Ensure parent section is visible
+    studySection.classList.remove('hidden');
+    
     const dashboard = studySection.querySelector('.dashboard');
     const batchesContainer = document.getElementById('batches-container');
     const backContainer = document.getElementById('study-back-container');
@@ -474,6 +477,9 @@ function showStudyZone() {
 function showMyBatchesSub() {
     const studySection = document.getElementById('study-section');
     if (!studySection) return;
+
+    // Ensure parent section is visible
+    studySection.classList.remove('hidden');
 
     const dashboard = studySection.querySelector('.dashboard');
     const batchesContainer = document.getElementById('batches-container');
